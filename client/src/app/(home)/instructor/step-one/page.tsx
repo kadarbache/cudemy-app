@@ -54,11 +54,8 @@ export default function Page() {
     }
   }, [registerFormData]);
 
-  function formatSelectOptions(obj: any) {
-    const values = obj.map(
-      (option: { label: string; value: string; category: string }) =>
-        option.value
-    );
+  function formatSelectOptions(obj: Option[]) {
+    const values = obj.map((option) => option.value);
     return values;
   }
 

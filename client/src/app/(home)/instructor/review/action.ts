@@ -52,6 +52,7 @@ export async function submitForm(
     };
     return retVal;
   } catch (error) {
+    console.error("Submit form error:", error);
     return { success: false, message: "Something went wrong..." };
   }
 }

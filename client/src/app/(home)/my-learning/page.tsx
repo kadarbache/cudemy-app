@@ -4,14 +4,6 @@ import Footer from "@/components/footer";
 import Tabs from "./_components/tabs";
 
 const Page = () => {
-  const tabs = [
-    "All",
-    "Courses",
-    "Wishlist",
-    "Completed",
-    "In Progress",
-    "Archived",
-  ];
   return (
     <>
       <NavigationFixed />

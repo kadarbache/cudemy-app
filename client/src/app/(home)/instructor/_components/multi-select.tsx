@@ -46,9 +46,9 @@ export function MultiSelect({
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const handleUnselect = (option: Option) => {
-    onChange(selected.filter((item) => item.value !== option.value));
-  };
+  // const handleUnselect = (option: Option) => {
+  //   onChange(selected.filter((item) => item.value !== option.value));
+  // };
 
   const groupedOptions = options.reduce(
     (acc, option) => {

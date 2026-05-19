@@ -6,11 +6,11 @@ import { SelectInput } from "../../courses/_components/heroSearchBar";
 import { useRegisterInstructorContext } from "./registerInstructorContext";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
-type InputProps = {
+type InputProps<T extends object> = {
   type: string;
   placeholder?: string;
   description: string;
-  setSelected: React.Dispatch<React.SetStateAction<any>>;
+  setSelected?: React.Dispatch<React.SetStateAction<T>>;
   inputValue?: string | number;
   name: string;
   min?: number;
@@ -28,10 +28,10 @@ type InputCheckboxProps = {
   label: string;
   paragraph?: string;
   selectedOption: boolean;
-  onhandleSelectionChange: (field: string, value: any) => void;
+  onhandleSelectionChange: (field: string, value: boolean) => void;
 };
 
-export function InstructorFormInput({
+export function InstructorFormInput<T extends object>({
   type,
   setSelected,
   placeholder,
@@ -40,7 +40,7 @@ export function InstructorFormInput({
   inputValue,
   min,
   max,
-}: InputProps) {
+}: InputProps<T>) {
   const { updateRegisterDataForm } = useRegisterInstructorContext();
   return (
     <>
@@ -55,10 +55,10 @@ export function InstructorFormInput({
         max={max}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (setSelected) {
-            setSelected((prev: any) => ({
+            setSelected((prev) => ({
               ...prev,
               [name]: e.target.value,
-            }));
+            }) as unknown as T);
 
             updateRegisterDataForm(
               type === "number"
@@ -110,7 +110,7 @@ export function InstructorFormCheckbox({
         required
         checked={selectedOption}
         onCheckedChange={(checked: CheckedState) => {
-          onhandleSelectionChange(checkboxId, checked);
+          onhandleSelectionChange(checkboxId, checked === true);
         }}
       />
       <div className="grid gap-2">

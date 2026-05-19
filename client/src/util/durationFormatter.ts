@@ -9,7 +9,7 @@ const durationFormatterString = (totalSecondsDuration: number): string => {
   const minutesAfterHours = totalMinutesInDuration % 60;
   const secondsAfterMinutes = Math.round(totalSecondsDuration % 60);
 
-  let durationParts: string[] = [];
+  const durationParts: string[] = [];
 
   // Add hours if present
   if (fullHours > 0) {

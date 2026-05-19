@@ -45,6 +45,7 @@ export const updateProfile = async (
       return { status: "error", message: responseData.message };
     }
   } catch (error) {
+    console.error("Update profile error:", error);
     return { status: "error", message: "Something went wrong" };
   }
 };
@@ -77,6 +78,7 @@ export const uploadProfileImage = async (formData: FormData) => {
       };
     }
   } catch (error) {
+    console.error("Upload profile image error:", error);
     return { status: "error", message: "something went wrong" };
   }
 };

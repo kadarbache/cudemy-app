@@ -9,10 +9,17 @@ interface ObjType {
   category: string;
 }
 
-function formatSelectOptions(obj: any) {
-  const deserialesed = JSON.parse(obj);
-  const values = deserialesed.map((option: ObjType) => option.value);
-  return values;
+function formatSelectOptions(obj: FormDataEntryValue[]): string[] {
+  // 1. Safely retrieve the first string from the array
+  const jsonStr = obj[0];
+  if (typeof jsonStr !== "string") return [];
+
+  // 2. Parse and cast the result to ObjType[]
+  const deserialised = JSON.parse(jsonStr) as ObjType[];
+  console.log("Deserialesed: ", deserialised);
+
+  // 3. Map and return the values (TypeScript automatically infers string[])
+  return deserialised.map((option) => option.value);
 }
 
 function stingToBoolean(str: FormDataEntryValue | null) {
@@ -21,7 +28,7 @@ function stingToBoolean(str: FormDataEntryValue | null) {
 
 export async function registerInstructorOne(
   prev: unknown,
-  formdata: FormData
+  formdata: FormData,
 ): Promise<
   { success: boolean; message: string; route?: string } | Record<string, string>
 > {
@@ -32,6 +39,7 @@ export async function registerInstructorOne(
       yearsOfExpertise: (formdata.get("yearsOfExpertise") as string) || null,
       qualification: formatSelectOptions(formdata.getAll("qualification")),
     };
+    console.log("Data: ", formdata.getAll("occupation"));
 
     stepOneSchema.parse(data);
     return {
@@ -58,7 +66,7 @@ interface Data {
 
 export async function registerInstructorTwo(
   prev: unknown,
-  formdata: FormData
+  formdata: FormData,
 ): Promise<
   | { success: boolean; message: string; route?: string; data?: Data }
   | Record<string, string>

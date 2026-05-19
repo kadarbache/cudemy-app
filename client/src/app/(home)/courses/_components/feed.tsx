@@ -1,7 +1,7 @@
 import { CircleUser } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ICourse } from "@/components/util/interfaces";
+import { ICourse } from "@/util/interfaces";
 
 /*
  the rating functionality be implemented in the future
@@ -40,7 +40,8 @@ function Card({ courses }: { courses: ICourse[] }) {
             </p>
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, index) => {
-                if (course?.rating >= index + 1) {
+                const rating = course.rating ?? 0;
+                if (rating >= index + 1) {
                   return (
                     <div className="w-4 h-4 relative" key={index}>
                       <Image
@@ -51,7 +52,7 @@ function Card({ courses }: { courses: ICourse[] }) {
                       />
                     </div>
                   );
-                } else if (course.rating > index && course.rating < index + 1) {
+                } else if (rating > index && rating < index + 1) {
                   return (
                     <div className="w-4 h-4 relative" key={index}>
                       <Image

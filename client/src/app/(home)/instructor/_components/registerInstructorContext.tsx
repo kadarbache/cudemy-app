@@ -46,22 +46,22 @@ export function RegisterInstructorProvider({
     }));
   };
 
-  const readFromLocalStorage = () => {
-    const loadedDataString = localStorage.getItem(REGISTER_INSTRUCTOR_DATA_KEY);
-    if (!loadedDataString) return setRegisterFormData(registerFormData);
-    const validated = instructorRegisterFormSchema.safeParse(
-      JSON.parse(loadedDataString)
-    );
-
-    if (validated.success) {
-      console.log("the stored data", validated.data);
-      setRegisterFormData(validated.data);
-    } else {
-      setRegisterFormData(defaultFormData);
-    }
-  };
-
   useEffect(() => {
+    const readFromLocalStorage = () => {
+      const loadedDataString = localStorage.getItem(REGISTER_INSTRUCTOR_DATA_KEY);
+      if (!loadedDataString) return;
+      const validated = instructorRegisterFormSchema.safeParse(
+        JSON.parse(loadedDataString)
+      );
+
+      if (validated.success) {
+        console.log("the stored data", validated.data);
+        setRegisterFormData(validated.data);
+      } else {
+        setRegisterFormData(defaultFormData);
+      }
+    };
+
     readFromLocalStorage();
     setDataLoaded(true);
   }, []);

@@ -68,18 +68,20 @@ export function ImageCropDialog({ open, setDialogOpen }: ImageCropDialogProps) {
 
   const handleUpload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!imageRef.current || !previewCanvasRef.current || !crop) return;
+
     setCanvasPreview(
-      imageRef?.current!,
-      previewCanvasRef?.current!,
+      imageRef.current,
+      previewCanvasRef.current,
       convertToPixelCrop(
-        crop!,
-        imageRef?.current!?.width,
-        imageRef?.current!?.height,
+        crop,
+        imageRef.current.width,
+        imageRef.current.height,
       ),
     );
 
     // convert canvas -> blob
-    const canvas = previewCanvasRef.current!;
+    const canvas = previewCanvasRef.current;
     if (!canvas) return;
 
     const blob: Blob | null = await new Promise((resolve) =>

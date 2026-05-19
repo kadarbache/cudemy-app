@@ -29,7 +29,7 @@ export default function Page() {
         toast.error(state.message);
       }
     }
-  }, [state]);
+  }, [state, router]);
 
   return (
     <>

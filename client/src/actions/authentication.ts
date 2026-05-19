@@ -169,6 +169,7 @@ export async function signinAction(
       };
     }
   } catch (error: unknown) {
+    console.error("Signin error:", error);
     return { status: "error", message: "something went wrong" };
   }
 }

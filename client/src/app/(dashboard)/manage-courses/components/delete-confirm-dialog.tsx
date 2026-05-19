@@ -17,7 +17,16 @@ interface DeleteConfirmDialogProps {
   onOpenChange: (open: boolean) => void;
   title: string;
   description: React.ReactNode;
-  action: (prev: unknown, formData: FormData) => Promise<any>;
+  action: (
+    prev: unknown,
+    formData: FormData,
+  ) => Promise<
+    | {
+        status: string;
+        message?: string | string[];
+      }
+    | Record<string, string>
+  >;
   targetId: string;
   inputIdName: string;
 }
@@ -42,11 +51,26 @@ export default function DeleteConfirmDialog({
   );
 
   useEffect(() => {
-    if (state?.status === "success") {
-      toast.success(state.message);
+    const status = state && "status" in state ? state.status : undefined;
+    const message = state && "message" in state ? state.message : undefined;
+
+    if (status === "success") {
+      const displayMsg =
+        typeof message === "string"
+          ? message
+          : Array.isArray(message)
+            ? message[0]
+            : "Success";
+      toast.success(displayMsg);
       onOpenChange(false);
-    } else if (state?.status === "error") {
-      toast.error(state.message);
+    } else if (status === "error") {
+      const displayMsg =
+        typeof message === "string"
+          ? message
+          : Array.isArray(message)
+            ? message[0]
+            : "Error";
+      toast.error(displayMsg);
     }
   }, [state, onOpenChange]);
 

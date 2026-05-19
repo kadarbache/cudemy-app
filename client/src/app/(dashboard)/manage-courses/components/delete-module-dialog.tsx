@@ -33,11 +33,26 @@ export default function DeleteModuleDialog({
   const [state, action, isPending] = useActionState(deleteModule, initialState);
 
   useEffect(() => {
-    if (state?.status === "success") {
-      toast.success(state.message);
+    const status = state && "status" in state ? state.status : undefined;
+    const message = state && "message" in state ? state.message : undefined;
+
+    if (status === "success") {
+      const displayMsg =
+        typeof message === "string"
+          ? message
+          : Array.isArray(message)
+            ? message[0]
+            : "Success";
+      toast.success(displayMsg);
       onOpenChange(false);
-    } else if (state?.status === "error") {
-      toast.error(state.message);
+    } else if (status === "error") {
+      const displayMsg =
+        typeof message === "string"
+          ? message
+          : Array.isArray(message)
+            ? message[0]
+            : "Error";
+      toast.error(displayMsg);
     }
   }, [state, onOpenChange]);
 

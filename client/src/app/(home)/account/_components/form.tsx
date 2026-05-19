@@ -22,7 +22,7 @@ export default function Form({
     email: "",
     displayName: "",
   });
-  const [state, formAction, pending] = useActionState(updateProfile, null);
+  const [, formAction, pending] = useActionState(updateProfile, null);
   const { email, image, name } = userSession ?? {
     name: "",
     email: "",

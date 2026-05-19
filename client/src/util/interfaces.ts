@@ -45,6 +45,7 @@ export interface ICourse {
   instructor: IInstructor;
   modules?: Module[];
   isEnrolled?: boolean;
+  rating?: number;
 }
 
 export interface Lecture {

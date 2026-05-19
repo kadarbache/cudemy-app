@@ -1,4 +1,4 @@
-import { ICourse } from "@/components/util/interfaces";
+import { ICourse } from "@/util/interfaces";
 import { Book, Clock, TrendingUp, Users } from "lucide-react";
 
 export default function Status({ courses }: { courses: ICourse[] }) {
