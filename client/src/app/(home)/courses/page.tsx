@@ -39,7 +39,8 @@ const Page = async function () {
 
   const response = await data.json();
   if (!data.ok) {
-    return console.error("Failed to fetch courses:", data.statusText);
+    console.error("Failed to fetch courses:", data.statusText);
+    return null;
   }
 
   const courses = response.data.courses;
