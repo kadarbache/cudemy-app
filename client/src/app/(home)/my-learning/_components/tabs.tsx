@@ -11,13 +11,14 @@ export type Tab =
   | "In Progress"
   | "Archived";
 
-export default function Tabs({ tab }: { tab?: string }) {
-  const [activeTab, setActiveTab] = useState<Tab>((tab as Tab) || "Account");
+export default function Tabs({ tab }: { tab: Tab }) {
+  const [activeTab, setActiveTab] = useState<Tab>(tab);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   function handleTabChange(tab: Tab) {
+    console.log("tab", tab);
     const params = new URLSearchParams(searchParams);
     params.set("tab", tab);
     router.push(`${pathname}?${params.toString()}`);
