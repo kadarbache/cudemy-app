@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactCrop, {
   centerCrop,
   convertToPixelCrop,
@@ -11,7 +11,7 @@ import ReactCrop, {
   type Crop,
 } from "react-image-crop";
 import { uploadProfileImage } from "../action";
-import ErrorMessage from "./errorMessage";
+import ErrorMessage, { MessageVariant } from "./errorMessage";
 import SelectImageBtn from "./selectImageBtn";
 import setCanvasPreview from "./setCanvasPrev";
 import toast from "react-hot-toast";
@@ -25,24 +25,42 @@ const MIN_DIMENSION = 150;
 
 export function ImageCropDialog({ open, setDialogOpen }: ImageCropDialogProps) {
   const [crop, setCrop] = useState<Crop | undefined>(undefined);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<
+    { variant: MessageVariant; message: string } | undefined
+  >(undefined);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  console.log("is image url", imageUrl === undefined);
+
+  useEffect(() => {
+    if (imageUrl === "" || imageUrl === undefined) {
+      setErrorMessage({
+        variant: "warning",
+        message:
+          "Please select an image with minimum dimensions of 150x150 pixels and an aspect ratio close to 1:1.",
+      });
+    }
+  }, [imageUrl]);
 
   const onHandleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height, naturalHeight, naturalWidth } = e.currentTarget;
     const croppedWidth = (MIN_DIMENSION / 100) * width;
 
     if (naturalWidth < MIN_DIMENSION || naturalHeight < MIN_DIMENSION) {
-      setErrorMessage(
-        `Image is too small. Minimum dimensions are ${MIN_DIMENSION}px by ${MIN_DIMENSION}px.`,
-      );
+      setErrorMessage({
+        variant: "error",
+        message:
+          "Image is too small. Minimum dimensions are ${MIN_DIMENSION}px by ${MIN_DIMENSION}px.",
+      });
     } else if (
       naturalHeight > naturalWidth * 4 ||
       naturalWidth > naturalHeight * 4
     ) {
-      setErrorMessage("Image aspect ratio is too extreme.");
+      setErrorMessage({
+        variant: "error",
+        message: "Image aspect ratio is too extreme.",
+      });
     }
 
     const crop = makeAspectCrop(
@@ -73,11 +91,7 @@ export function ImageCropDialog({ open, setDialogOpen }: ImageCropDialogProps) {
     setCanvasPreview(
       imageRef.current,
       previewCanvasRef.current,
-      convertToPixelCrop(
-        crop,
-        imageRef.current.width,
-        imageRef.current.height,
-      ),
+      convertToPixelCrop(crop, imageRef.current.width, imageRef.current.height),
     );
 
     // convert canvas -> blob
@@ -128,7 +142,7 @@ export function ImageCropDialog({ open, setDialogOpen }: ImageCropDialogProps) {
         </DialogTitle>
 
         {/* Image Preview Area - takes up remaining space */}
-        <div className="flex-1 flex items-center justify-center h-[500px] bg-muted m-6 mt-4 rounded-lg verflow-hidden">
+        <div className="flex-1 flex items-center justify-center min-h-30 h-[500px] bg-muted m-6 mt-4 rounded-lg verflow-hidden">
           {imageUrl ? (
             <ReactCrop
               crop={crop}
@@ -155,7 +169,10 @@ export function ImageCropDialog({ open, setDialogOpen }: ImageCropDialogProps) {
           )}
         </div>
 
-        <ErrorMessage errorMessage={errorMessage} />
+        <ErrorMessage
+          variant={errorMessage?.variant || "error"}
+          errorMessage={errorMessage?.message}
+        />
 
         {crop && (
           <canvas
