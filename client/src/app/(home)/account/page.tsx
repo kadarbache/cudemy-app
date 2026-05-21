@@ -8,13 +8,13 @@ import AccountTab from "./_components/AccountTab";
 export default async function page({
   searchParams,
 }: {
-  searchParams: { tab: Tab };
+  searchParams: Promise<{ tab: string }>;
 }) {
   const userSession: UserSession | null = await getUserSession();
   const { image } = userSession ?? {};
-  const tab = searchParams.tab || "Account";
-  console.log(tab);
-  console.log(image);
+  const param = (await searchParams).tab || "Account";
+  const tab = param as Tab;
+
   return (
     <div className="container max-w-7xl mx-auto px-4 mt-[var(--margin-section-top)]">
       {/* navigation */}

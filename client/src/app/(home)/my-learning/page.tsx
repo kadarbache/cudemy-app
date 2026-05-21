@@ -1,7 +1,6 @@
+import Footer from "@/components/footer";
 import { NavigationFixed } from "@/components/navigation";
 import { Card } from "./_components/card";
-import Footer from "@/components/footer";
-import Tabs from "./_components/tabs";
 
 const Page = () => {
   return (
@@ -12,7 +11,7 @@ const Page = () => {
           My Learning
         </h1>
         {/* navigation tabs */}
-        <Tabs />
+        {/* <Tabs tab="Courses" /> */}
         <p className="text-center text-popover-foreground/50 mt-2 px-4">
           Here you can find your enrolled courses and track your progress.
         </p>
