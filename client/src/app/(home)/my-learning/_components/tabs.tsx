@@ -1,23 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
-export default function Tabs() {
-  const [activeTab, setActiveTab] = useState("courses");
-  const tabs = [
-    "All",
+// Define the type for the tabs
+export type Tab =
+  | "Account"
+  | "Courses"
+  | "Wishlist"
+  | "Completed"
+  | "In Progress"
+  | "Archived";
+
+export default function Tabs({ tab }: { tab: Tab }) {
+  const [activeTab, setActiveTab] = useState<Tab>(tab);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  function handleTabChange(tab: Tab) {
+    console.log("tab", tab);
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tab);
+    router.push(`${pathname}?${params.toString()}`);
+    setActiveTab(tab);
+  }
+
+  const tabs: Tab[] = [
+    "Account",
     "Courses",
     "Wishlist",
     "Completed",
     "In Progress",
     "Archived",
   ];
+
   return (
     <nav className="border-b md:border-none">
       <div className="flex items-center md:justify-center overflow-x-auto scrollbar-hide px-4 gap-8">
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabChange(tab)}
             className={`py-4 px-1 whitespace-nowrap text-sm font-medium transition-colors relative flex-shrink-0 ${
               activeTab === tab
                 ? "text-teal-500"
