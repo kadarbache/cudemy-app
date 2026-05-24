@@ -2,7 +2,7 @@
 import Cart from "../../public/assets/Cart.svg";
 import LogoNav from "../../public/assets/logoNav.svg";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getUserSession } from "@/actions/authentication";
@@ -11,9 +11,10 @@ import Browse from "@/components/browse";
 import { SigninButton } from "@/components/signinButton";
 import { SignupButton } from "@/components/singupButton";
 import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+import SearchBar from "@/components/searchBar";
 
 export const Navigation = ({
   userSession,
@@ -87,14 +88,7 @@ export const NavigationFixed = () => {
           </button>
         </div>
         {/* searchBar */}
-        <div className="hidden lg:flex items-center gap-5 relative">
-          <Input
-            type="text"
-            placeholder="Search keywords"
-            className="py-3 px-12 rounded-[8px] text-start bg-popover/90 text-popover-foreground/90 font-poppins text-[12px] font-normal leading-[21px] w-[500px] h-[42px] shadow-none border-1 border-[var(--primary-color)] placeholder:text-sm placeholder:text-popover-foreground/30 "
-          />
-          <Search className="text-[var(--primary-color)] absolute left-0 top-1/2 transform -translate-y-1/2 ml-2" />
-        </div>
+        <SearchBar />
         {/* Auth-Buttons */}
         {data || isPending ? (
           <div className="flex items-center gap-5">
