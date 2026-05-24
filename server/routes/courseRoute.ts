@@ -10,6 +10,7 @@ import {
   getYourCourses,
   getYourCourse,
   enrollCourse,
+  getCoursesByQuery,
 } from '../controllers/courseController/courseController.ts'
 import {
   createNewModule,
@@ -39,6 +40,9 @@ courseRouter.route('/').get(getAllCourses)
 
 // Get all courses created by the current instructor
 courseRouter.route('/yourcourses').get(session, getYourCourses)
+
+// Get courses by query
+courseRouter.route('/search').get(getCoursesByQuery)
 
 // Get a specific course by its ID
 courseRouter.route('/:courseId').get(optionalSession, getCourse)

@@ -173,8 +173,48 @@ export async function getCourse(
     }
     return next(
       new AppError(
-        `internal server error while getting a course ${
-          error instanceof Error ? error.message : 'unknown error'
+        `internal server error while getting a course ${error instanceof Error ? error.message : 'unknown error'
+        }`,
+        500,
+      ),
+    )
+  }
+}
+
+// get course by query
+export const getCoursesByQuery = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { query } = req.query
+    console.log("it's running", query)
+    if (!query) {
+      return next(new AppError('Query is required', 400))
+    }
+
+    const courses = await prisma.course.findMany({
+      where: {
+        title: {
+          contains: query as string,
+        },
+      },
+      include: {
+        instructor: true,
+      },
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        courses,
+      },
+    })
+  } catch (error) {
+    return next(
+      new AppError(
+        `internal server error while fetching courses by query ${error instanceof Error ? error.message : 'unknown error'
         }`,
         500,
       ),
