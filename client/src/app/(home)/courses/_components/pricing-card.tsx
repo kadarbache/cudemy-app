@@ -14,6 +14,7 @@ import { enrollCourseAction } from "@/actions/course";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PricingCard({ course }: { course: ICourse }) {
   const duration = durationFormatterString(course.totalOfHours);
@@ -85,32 +86,21 @@ export default function PricingCard({ course }: { course: ICourse }) {
             size="lg"
             asChild
           >
-            {/* Add Link here if needed to go to course specific page or just show text */}
-            <div>Go to Course</div>
+            <Link href={`/courses/${course.id}/learn`}>Go to Course</Link>
           </Button>
         ) : (
-          <>
-            <Button
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xl py-3 rounded-lg transition-colors cursor-pointer"
-              size="lg"
-              asChild
-            >
-              {/* Add Link here if needed to go to course specific page or just show text */}
-              <div>Go to Course</div>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
-              size="lg"
-            >
-              <div className="flex items-center justify-center">
-                {/* ! is Tailwind's important modifier to override ShadCN's defaults */}
-                <Heart size={28} className="mr-2 flex !w-7 !h-7" />
-                <p>Wishlist</p>
-              </div>
-            </Button>
-          </>
+          <Button
+            asChild
+            variant="outline"
+            className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
+            size="lg"
+          >
+            <div className="flex items-center justify-center">
+              {/* ! is Tailwind's important modifier to override ShadCN's defaults */}
+              <Heart size={28} className="mr-2 flex !w-7 !h-7" />
+              <p>Wishlist</p>
+            </div>
+          </Button>
         )}
       </div>
 
