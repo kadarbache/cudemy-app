@@ -75,6 +75,61 @@ export async function getYourCourses(
   }
 }
 
+// get the courses the current user is enrolled in
+export async function getEnrolledCourses(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // 1) getting the user
+    const user = req.user
+    if (!user) {
+      return next(new AppError('user not found', 404))
+    }
+
+    // 2) getting the enrollments of the user
+    const enrollments = await prisma.enrolledCourse.findMany({
+      where: { userId: user.id },
+      orderBy: { entrolledAt: 'desc' },
+      include: {
+        course: {
+          include: {
+            instructor: true,
+            modules: {
+              include: {
+                lectures: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // 3) flattening the enrollments into courses
+    const courses = enrollments.map((enrollment) => ({
+      ...enrollment.course,
+      isEnrolled: true,
+      entrolledAt: enrollment.entrolledAt,
+    }))
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        courses,
+      },
+      message: 'enrolled courses fetched successfully',
+    })
+  } catch (error) {
+    return next(
+      new AppError(
+        `internal server error while fetching enrolled courses ${error instanceof Error ? error.message : 'unknown error'}`,
+        500,
+      ),
+    )
+  }
+}
+
 export async function getYourCourse(
   req: Request,
   res: Response,

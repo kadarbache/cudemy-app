@@ -48,6 +48,10 @@ export interface ICourse {
   rating?: number;
 }
 
+export interface IEnrolledCourse extends ICourse {
+  entrolledAt: string;
+}
+
 export interface Lecture {
   id: string;
   title: string;

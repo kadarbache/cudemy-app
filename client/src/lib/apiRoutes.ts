@@ -21,6 +21,7 @@ export const apiRoutes = {
     getCourseById: (id: string) => `${API_BASE_URL}/course/${id}`,
     createCourse: `${API_BASE_URL}/course/newcourse`,
     getYourCourses: `${API_BASE_URL}/course/yourcourses`,
+    getEnrolledCourses: `${API_BASE_URL}/course/enrolled`,
     deleteCourse: `${API_BASE_URL}/course/deletecourse`,
     updateCourse: (id: string) => `${API_BASE_URL}/course/updatecourse/${id}`,
     enrollCourse: (id: string) => `${API_BASE_URL}/course/enroll/${id}`,

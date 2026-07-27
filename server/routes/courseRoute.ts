@@ -9,6 +9,7 @@ import {
   getCourse,
   getYourCourses,
   getYourCourse,
+  getEnrolledCourses,
   enrollCourse,
 } from '../controllers/courseController/courseController.ts'
 import {
@@ -39,6 +40,9 @@ courseRouter.route('/').get(getAllCourses)
 
 // Get all courses created by the current instructor
 courseRouter.route('/yourcourses').get(session, getYourCourses)
+
+// Get all courses the current user is enrolled in
+courseRouter.route('/enrolled').get(session, getEnrolledCourses)
 
 // Get a specific course by its ID
 courseRouter.route('/:courseId').get(optionalSession, getCourse)
