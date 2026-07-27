@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { apiRoutes } from "@/lib/apiRoutes";
+import { NavigationFixed } from "@/components/navigation";
 import { ICourse, Lecture, Module } from "@/util/interfaces";
-import LessonNav from "./_components/lesson-nav";
 import VideoPanel from "./_components/video-panel";
 import LessonSidebar from "./_components/lesson-sidebar";
 
@@ -47,8 +47,8 @@ const Page = async ({
 
   return (
     <div className="min-h-screen">
-      <LessonNav courseId={IdCourse} />
-      <div className="flex gap-6 max-w-[1400px] mx-auto my-5 px-5 items-start">
+      <NavigationFixed />
+      <div className="flex gap-6 max-w-[1400px] mx-auto mt-[var(--margin-section-top)] mb-5 px-5 items-start">
         <VideoPanel activeModule={activeModule} activeLecture={activeLecture} />
         <LessonSidebar course={course} activeLectureId={activeLecture?.id} />
       </div>

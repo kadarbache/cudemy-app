@@ -36,27 +36,8 @@ export default function VideoPanel({
         <div className="font-bold flex items-center gap-2">
           <Paperclip className="w-4 h-4" /> Lesson resources
         </div>
-        <div className="mt-3 flex flex-col gap-2">
-          {resources.map((resource) => (
-            <div
-              key={resource.name}
-              className="flex items-center gap-3 bg-popover rounded-lg px-4 py-3"
-            >
-              <FileText className="w-[18px] h-[18px] text-primary" />
-              <div className="flex-1">
-                <div className="text-sm">{resource.name}</div>
-                <div className="text-xs text-popover-foreground/40">
-                  {resource.size}
-                </div>
-              </div>
-              <button
-                disabled
-                className="flex items-center gap-1.5 border border-popover-foreground/15 rounded-md px-3.5 py-1.5 text-xs cursor-not-allowed opacity-60"
-              >
-                <Download className="w-3.5 h-3.5" /> Download
-              </button>
-            </div>
-          ))}
+        <div className="mt-3 text-sm text-popover-foreground/40">
+          No resources available
         </div>
       </div>
     </div>
