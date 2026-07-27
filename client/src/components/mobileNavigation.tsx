@@ -3,7 +3,6 @@
 import { Search, Menu, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import NavLogo from "../../public/assets/logoNav.svg";
 import Cart from "../../public/assets/Cart.svg";
 import Image from "next/image";
 import { getUserSession } from "../actions/authentication";
@@ -39,7 +38,13 @@ export default function MobileNavigation() {
             </div>
             {/* searchBar */}
             <Link href="/" className="">
-              <NavLogo />
+              <Image
+                src="/assets/logo.png"
+                alt="Cudemy"
+                width={179}
+                height={34}
+                priority
+              />
             </Link>
             {/* Auth-Buttons */}
             <div className="flex items-center gap-2">

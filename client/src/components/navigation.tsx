@@ -1,6 +1,5 @@
 "use client";
 import Cart from "../../public/assets/Cart.svg";
-import LogoNav from "../../public/assets/logoNav.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
@@ -25,7 +24,13 @@ export const Navigation = ({
       <div className="flex w-full items-center justify-between ">
         <div className="flex items-center gap-12">
           <Link href="#">
-            <LogoNav />
+            <Image
+              src="/assets/logo.png"
+              alt="Cudemy"
+              width={179}
+              height={34}
+              priority
+            />
           </Link>
           <Browse userSession={userSession} />
         </div>
@@ -79,7 +84,13 @@ export const NavigationFixed = () => {
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/">
-            <LogoNav />
+            <Image
+              src="/assets/logo.png"
+              alt="Cudemy"
+              width={179}
+              height={34}
+              priority
+            />
           </Link>
           <button className="items-center text-[var(--primary-color)] font-poppins text-[16px] not-italic font-normal leading-[21px] bg-transparent cursor-pointer hover:text-[var(--primary-color)]/70 transition-all hidden">
             <span>Browse</span>
