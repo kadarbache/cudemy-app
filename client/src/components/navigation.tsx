@@ -94,6 +94,9 @@ export const NavigationFixed = () => {
             className="py-3 px-12 rounded-[8px] text-start bg-popover/90 text-popover-foreground/90 font-poppins text-[12px] font-normal leading-[21px] w-[500px] h-[42px] shadow-none border-1 border-[var(--primary-color)] placeholder:text-sm placeholder:text-popover-foreground/30 "
           />
           <Search className="text-[var(--primary-color)] absolute left-0 top-1/2 transform -translate-y-1/2 ml-2" />
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded border border-popover-foreground/15 bg-popover px-1.5 py-0.5 text-[10px] font-medium text-popover-foreground/40">
+            Ctrl K
+          </kbd>
         </div>
         {/* Auth-Buttons */}
         {data || isPending ? (
