@@ -34,6 +34,10 @@ export const auth = betterAuth({
         type: 'string',
         input: false,
       },
+      language: {
+        type: 'string',
+        input: false,
+      },
     },
   },
   trustedOrigins: ['http://localhost:3001'],

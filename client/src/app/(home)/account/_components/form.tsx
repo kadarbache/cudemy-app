@@ -23,10 +23,11 @@ export default function Form({
     displayName: "",
   });
   const [, formAction, pending] = useActionState(updateProfile, null);
-  const { email, image, name } = userSession ?? {
+  const { email, image, name, language } = userSession ?? {
     name: "",
     email: "",
     image: "",
+    language: "English",
   };
 
   useEffect(() => {
@@ -58,9 +59,11 @@ export default function Form({
       />
       <SelectInput
         className="w-full max-w-full"
-        selectItems={["somali", "english"]}
+        selectItems={["English", "Somali"]}
         selectLabel="language"
         selectPlaceholder="Select a language"
+        name="language"
+        defaultValue={language}
       />
       <Button
         size="lg"

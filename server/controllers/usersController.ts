@@ -39,14 +39,14 @@ export const updateProfile = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { name, bio } = req.body
+  const { name, bio, language } = req.body
   try {
     const user = req.user
     if (!user) {
       return next(new AppError('User not found', 404))
     }
 
-    if (!name || name === user.name) {
+    if (!name) {
       return res.status(404).json({
         status: 'error',
         message: 'name is required',
@@ -54,7 +54,7 @@ export const updateProfile = async (
     }
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
-      data: { name, bio },
+      data: { name, bio, language },
     })
     if (!updatedUser) {
       return next(new AppError('User not found', 404))

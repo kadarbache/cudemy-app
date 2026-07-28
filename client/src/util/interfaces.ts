@@ -9,6 +9,7 @@ export interface UserSession {
   createdAt: string;
   updatedAt: string;
   roles: Role[];
+  language: string;
 }
 
 export interface IInstructor {

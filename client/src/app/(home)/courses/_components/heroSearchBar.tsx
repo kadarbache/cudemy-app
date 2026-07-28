@@ -20,6 +20,8 @@ interface SelectDemoProps {
   selectPlaceholder?: string;
   className?: string;
   required?: boolean;
+  name?: string;
+  defaultValue?: string;
 }
 
 export function SelectInput({
@@ -28,9 +30,11 @@ export function SelectInput({
   selectPlaceholder,
   className,
   required,
+  name,
+  defaultValue,
 }: SelectDemoProps) {
   return (
-    <Select required={required}>
+    <Select required={required} name={name} defaultValue={defaultValue}>
       <SelectTrigger
         size="lg"
         className={`bg-popover-foreground/10 w-[248px] max-w-md p-4 h-[56px] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-popover-foreground/70 font-poppins text-[16px] font-normal leading-[24px] border-none ${className}`}
@@ -41,7 +45,7 @@ export function SelectInput({
         <SelectGroup>
           <SelectLabel>{selectLabel}</SelectLabel>
           {selectItems?.map((item, index) => (
-            <SelectItem key={index} value={item.toLowerCase()}>
+            <SelectItem key={index} value={item}>
               {item}
             </SelectItem>
           ))}

@@ -6,6 +6,7 @@ import { revalidateTag } from "next/cache";
 import z from "zod";
 const validatedUser = z.object({
   name: z.string().min(4).max(15),
+  language: z.enum(["English", "Somali"]),
 });
 
 // update user profile
@@ -21,6 +22,7 @@ export const updateProfile = async (
 > => {
   const updatedUser = {
     name: formdata.get("name") as string,
+    language: formdata.get("language") as string,
   };
 
   try {
