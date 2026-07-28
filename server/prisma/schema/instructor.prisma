@@ -5,6 +5,7 @@ model Instructor {
     specificSkillsToTeach String[]
     yearsOfExperience     Int
     qualifications        String[]
+    instructorBio         String?
 
     // content
     guidelinesReviewed Boolean
