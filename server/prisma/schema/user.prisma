@@ -1,11 +1,12 @@
 model User {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  email  String   @unique
-  image  String   @default("default.jpg")
-  secret String   @default("")
-  roles  String[] @default(["student"])
-  bio    String?  @db.String
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String   @unique
+  image    String   @default("default.jpg")
+  secret   String   @default("")
+  roles    String[] @default(["student"])
+  bio      String?  @db.String
+  language String   @default("English")
 
   enrolledCourses EnrolledCourse[]
   lectures        Lecture[]
