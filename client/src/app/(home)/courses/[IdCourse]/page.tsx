@@ -5,6 +5,7 @@ import VideoPlayerComponent from "@/components/vedioPlayer";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { ICourse, Module } from "@/util/interfaces";
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import InstructorProfile from "../_components/instructorProfile";
 import PricingCard from "../_components/pricing-card";
 
@@ -32,7 +33,7 @@ const Page = async ({
     },
   });
 
-  if (!response.ok) return;
+  if (!response.ok) notFound();
   const { data } = await response.json();
   const course: ICourse = data;
 

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { getCookies } from "@/lib/helpers";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import CourseContent from "../components/course-content";
 import Image from "next/image";
 import ActionButtons from "../components/action-buttons";
@@ -19,28 +20,20 @@ export default async function page({
       headers: { cookie: cookieHeader },
     },
   );
+  if (response.status === 404) {
+    notFound();
+  }
   if (!response.ok) {
     throw new Error("Failed to fetch course");
   }
   const { data } = await response.json();
   const course = data.course;
-  const modules = course.modules;
-  console.log(course);
 
   if (!course) {
-    return (
-      <div className="bg-background p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            Course not found
-          </h1>
-          <Link href="/manage-courses">
-            <Button className="mt-4">Back to Courses</Button>
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
+
+  const modules = course.modules;
 
   return (
     <main className="w-full bg-background">

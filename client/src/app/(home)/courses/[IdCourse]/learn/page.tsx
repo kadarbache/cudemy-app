@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { NavigationFixed } from "@/components/navigation";
 import { ICourse, Lecture, Module } from "@/util/interfaces";
@@ -28,7 +28,7 @@ const Page = async ({
     next: { revalidate: 60 },
   });
 
-  if (!response.ok) return;
+  if (!response.ok) notFound();
   const { data } = await response.json();
   const course: ICourse = data;
 
