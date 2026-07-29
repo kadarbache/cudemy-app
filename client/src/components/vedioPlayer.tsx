@@ -21,7 +21,7 @@ const VideoPlayerComponent = ({
   if (videoUrl !== undefined) {
     video = videoUrl;
   }
-  if (!window) return null;
+  if (typeof window === "undefined") return null;
   return (
     <VideoPlayer className="overflow-hidden rounded-lg border mb-4">
       <VideoPlayerContent
