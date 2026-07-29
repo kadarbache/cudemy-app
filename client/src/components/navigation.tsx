@@ -4,13 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getUserSession } from "@/actions/authentication";
 import { UserSession } from "@/util/interfaces";
 import Browse from "@/components/browse";
+import { SearchDialog } from "@/components/search-dialog";
 import { SigninButton } from "@/components/signinButton";
 import { SignupButton } from "@/components/singupButton";
 import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -74,10 +75,23 @@ export const Navigation = ({
 };
 
 export const NavigationFixed = () => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { isPending, data } = useQuery({
     queryKey: ["userSession"],
     queryFn: () => getUserSession(),
   });
+
+  // makes the Ctrl K hint shown in the search bar actually work
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault();
+        setIsSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <section className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-popover shadow-[var(--shadow-search-bar)] py-4 px-2">
@@ -99,16 +113,18 @@ export const NavigationFixed = () => {
         </div>
         {/* searchBar */}
         <div className="hidden lg:flex items-center gap-5 relative">
-          <Input
-            type="text"
-            placeholder="Search keywords"
-            className="py-3 px-12 rounded-[8px] text-start bg-popover/90 text-popover-foreground/90 font-poppins text-[12px] font-normal leading-[21px] w-[500px] h-[42px] shadow-none border-1 border-[var(--primary-color)] placeholder:text-sm placeholder:text-popover-foreground/30 "
-          />
-          <Search className="text-[var(--primary-color)] absolute left-0 top-1/2 transform -translate-y-1/2 ml-2" />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded border border-popover-foreground/15 bg-popover px-1.5 py-0.5 text-[10px] font-medium text-popover-foreground/40">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="py-3 px-12 rounded-[8px] text-start bg-popover/90 text-popover-foreground/30 font-poppins text-sm font-normal leading-[21px] w-[500px] h-[42px] border-1 border-[var(--primary-color)] cursor-pointer"
+          >
+            Search keywords
+          </button>
+          <Search className="text-[var(--primary-color)] absolute left-0 top-1/2 transform -translate-y-1/2 ml-2 pointer-events-none" />
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded border border-popover-foreground/15 bg-popover px-1.5 py-0.5 text-[10px] font-medium text-popover-foreground/40 pointer-events-none">
             Ctrl K
           </kbd>
         </div>
+        <SearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
         {/* Auth-Buttons */}
         {data || isPending ? (
           <div className="flex items-center gap-5">

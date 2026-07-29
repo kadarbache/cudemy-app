@@ -2,6 +2,23 @@
 import { apiRoutes } from "@/lib/apiRoutes";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { ICourse } from "@/util/interfaces";
+
+// search courses by title, description or instructor name
+// an empty query returns every course, which the search dialog shows as suggestions
+export async function searchCoursesAction(query: string): Promise<ICourse[]> {
+  try {
+    const response = await fetch(apiRoutes.courses.searchCourses(query));
+
+    if (!response.ok) return [];
+
+    const { data } = await response.json();
+    return data.courses ?? [];
+  } catch (error) {
+    console.error("Course search error:", error);
+    return [];
+  }
+}
 
 export async function enrollCourseAction(courseId: string) {
   try {

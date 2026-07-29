@@ -7,9 +7,11 @@ import Cart from "../../public/assets/Cart.svg";
 import Image from "next/image";
 import { getUserSession } from "../actions/authentication";
 import { UserSession } from "../util/interfaces";
+import { SearchDialog } from "./search-dialog";
 import { ThemeToggle } from "./theme-toggle";
 export default function MobileNavigation() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   const [userSession, setUserSession] = React.useState<UserSession | null>(
     null,
   );
@@ -50,7 +52,11 @@ export default function MobileNavigation() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <div className="p-2 hover:bg-popover-foreground/7 rounded-md">
-                <Search size={20} color="#FB7A79" />
+                <Search
+                  size={20}
+                  color="#FB7A79"
+                  onClick={() => setIsSearchOpen(true)}
+                />
               </div>
               <div className="p-2 hover:bg-popover-foreground/7 rounded-md">
                 <Cart />
@@ -59,6 +65,7 @@ export default function MobileNavigation() {
           </div>
         </div>
       </div>
+      <SearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
       {/* the blured background */}
       {/* Overlay */}
       <div

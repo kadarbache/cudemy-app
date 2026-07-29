@@ -11,14 +11,30 @@ declare module 'express' {
   }
 }
 
-// get all courses
+// get all courses, optionally narrowed by a ?search= keyword
 export async function getAllCourses(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
+  const search =
+    typeof req.query['search'] === 'string' ? req.query['search'].trim() : ''
+
   try {
     const courses = await prisma.course.findMany({
+      where: search
+        ? {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { description: { contains: search, mode: 'insensitive' } },
+              {
+                instructor: {
+                  is: { name: { contains: search, mode: 'insensitive' } },
+                },
+              },
+            ],
+          }
+        : {},
       include: {
         instructor: true,
       },
