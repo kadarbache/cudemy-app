@@ -26,7 +26,6 @@ async function getEnrolledCourses(): Promise<IEnrolledCourse[] | null> {
 
 const Page = async () => {
   const courses = await getEnrolledCourses();
-
   return (
     <>
       <NavigationFixed />
