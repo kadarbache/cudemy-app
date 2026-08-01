@@ -215,11 +215,39 @@ export async function getCourse(
             lectures: true,
           },
         },
+        instructor: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            bio: true,
+            // the instructor profile filled in when the user registered as one
+            instructor: {
+              select: {
+                expertise: true,
+                yearsOfExperience: true,
+                instructorBio: true,
+              },
+            },
+          },
+        },
+        // how many students are enrolled in this course
+        _count: { select: { students: true } },
       },
     })
     if (!course) {
       return next(new AppError('no course found with this id', 404))
     }
+
+    // stats shown on the instructor section of the course page
+    const [totalCourses, totalStudents] = await Promise.all([
+      prisma.course.count({
+        where: { instructorId: course.instructorId },
+      }),
+      prisma.enrolledCourse.count({
+        where: { course: { is: { instructorId: course.instructorId } } },
+      }),
+    ])
 
     let isEnrolled = false
     if (req.user) {
@@ -236,7 +264,11 @@ export async function getCourse(
 
     res.status(200).json({
       message: 'here is your course',
-      data: { ...course, isEnrolled },
+      data: {
+        ...course,
+        isEnrolled,
+        instructorStats: { totalCourses, totalStudents },
+      },
     })
   } catch (error: unknown) {
     if (error instanceof AppError) {

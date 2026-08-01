@@ -12,6 +12,17 @@ export interface UserSession {
   language: string;
 }
 
+export interface IInstructorProfile {
+  expertise: string[];
+  yearsOfExperience: number;
+  instructorBio: string | null;
+}
+
+export interface IInstructorStats {
+  totalCourses: number;
+  totalStudents: number;
+}
+
 export interface IInstructor {
   id: string;
   name: string;
@@ -24,6 +35,8 @@ export interface IInstructor {
   lastActive: string;
   createdAt: string;
   updatedAt: string;
+  // only returned by the single course endpoint
+  instructor?: IInstructorProfile | null;
 }
 
 export interface ICourse {
@@ -47,6 +60,8 @@ export interface ICourse {
   modules?: Module[];
   isEnrolled?: boolean;
   rating?: number;
+  instructorStats?: IInstructorStats;
+  _count?: { students: number };
 }
 
 export interface IEnrolledCourse extends ICourse {

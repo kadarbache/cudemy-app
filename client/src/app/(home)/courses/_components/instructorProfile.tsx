@@ -1,14 +1,31 @@
 'use client'
 import Image from "next/image"
-import { Star, MessageSquare, Users, BookOpen} from "lucide-react"
+import { Users, BookOpen, Briefcase, GraduationCap } from "lucide-react"
 import { useState } from "react"
 import ShowMore from "./showMore"
+import { IInstructor, IInstructorStats } from "@/util/interfaces"
 
-export default function InstructorProfile() {
+const BIO_PREVIEW_LENGTH = 500
+
+type InstructorProfileProps = {
+  instructor?: IInstructor
+  stats?: IInstructorStats
+  courseStudents?: number
+}
+
+export default function InstructorProfile({ instructor, stats, courseStudents }: InstructorProfileProps) {
     const [showMore,setShowmore]=useState(false)
-    const description="Eric J. Roby is a full stack developer that has worked in the freelance and corporate world solving technical problems to bridge gaps in businesses.Eric made his technical debut when he began learning Java at the age of 14. Since learning Java, Eric has found himself completely addicted with learning technologies.You can have full confidence that Eric's courses are of exceptional quality, and that you can be a software developer if you choose so."
 
-    console.log(showMore)
+    if (!instructor) return null
+
+    const profile = instructor.instructor
+    const description = profile?.instructorBio || instructor.bio || ""
+    const expertise = profile?.expertise?.length ? profile.expertise.join(", ") : "Instructor"
+    const image =
+      !instructor.image || instructor.image === "default.png" || instructor.image === "default.jpg"
+        ? "/assets/default.png"
+        : instructor.image
+
   return (
     <div className="py-6 px-4">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Instructors</h2>
@@ -16,16 +33,16 @@ export default function InstructorProfile() {
       <div className="space-y-6">
         {/* Instructor Header */}
         <div>
-          <h3 className="text-xl font-semibold text-primary mb-1">Eric Roby</h3>
-          <p className="text-foreground/70">Engineer</p>
+          <h3 className="text-xl font-semibold text-primary mb-1">{instructor.name}</h3>
+          <p className="text-foreground/70">{expertise}</p>
         </div>
 
         {/* Profile Section */}
         <div className="flex items-start gap-6">
           <div className="flex-shrink-0">
             <Image
-              src="https://images.pexels.com/photos/2693814/pexels-photo-2693814.jpeg?cs=srgb&dl=pexels-pppsdavid-2693814.jpg&fm=jpg&w=1280&h=1280&_gl=1*hc3eb5*_ga*NjYyNTgyNDczLjE3NTI1NjUxOTI.*_ga_8JE65Q40S6*czE3NTMwMTczOTUkbzIkZzEkdDE3NTMwMTc0NDMkajEyJGwwJGgw"
-              alt="Eric Roby profile picture"
+              src={image}
+              alt={`${instructor.name} profile picture`}
               width={120}
               height={120}
               className="rounded-full object-cover"
@@ -34,36 +51,45 @@ export default function InstructorProfile() {
 
           <div className="flex-1 space-y-3">
             <div className="flex items-center gap-2 text-sm text-foreground/70">
-              <Star className="w-4 h-4 fill-current text-yellow-500" />
-              <span className="font-medium">4.6 Instructor Rating</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-foreground/70">
-              <MessageSquare className="w-4 h-4" />
-              <span>16,988 Reviews</span>
+              <GraduationCap className="w-4 h-4" />
+              <span>{(courseStudents ?? 0).toLocaleString()} Students in this course</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-foreground/70">
               <Users className="w-4 h-4" />
-              <span>145,635 Students</span>
+              <span>{(stats?.totalStudents ?? 0).toLocaleString()} Students</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-foreground/70">
               <BookOpen className="w-4 h-4" />
-              <span>10 Courses</span>
+              <span>{(stats?.totalCourses ?? 0).toLocaleString()} Courses</span>
             </div>
+
+            {profile?.yearsOfExperience ? (
+              <div className="flex items-center gap-2 text-sm text-foreground/70">
+                <Briefcase className="w-4 h-4" />
+                <span>{profile.yearsOfExperience} Years of experience</span>
+              </div>
+            ) : null}
           </div>
         </div>
 
         {/* Bio Section */}
         <div className="max-w-3xl space-y-4 text-sm text-foreground leading-relaxed">
-            {showMore === false ? (<p>{description.slice(0,500)}</p>) : (<p>{description}</p>)}
+            {description === "" ? (
+              <p className="text-foreground/60">This instructor has not added a bio yet.</p>
+            ) : showMore === false ? (
+              <p>{description.slice(0,BIO_PREVIEW_LENGTH)}</p>
+            ) : (
+              <p>{description}</p>
+            )}
         </div>
 
         {/* Show More Button */}
-        <ShowMore onHandleShowMore={setShowmore} showMore={showMore}/>
+        {description.length > BIO_PREVIEW_LENGTH && (
+          <ShowMore onHandleShowMore={setShowmore} showMore={showMore}/>
+        )}
       </div>
     </div>
   )
 }
-

@@ -72,7 +72,11 @@ const Page = async ({
             {/* reviews and course modules */}
             <TabMenu data={course} />
             {/* Instructor info */}
-            <InstructorProfile />
+            <InstructorProfile
+              instructor={course?.instructor}
+              stats={course?.instructorStats}
+              courseStudents={course?._count?.students}
+            />
             {/* <Reviews/> */}
           </div>
           {/* Block for puying the course */}
