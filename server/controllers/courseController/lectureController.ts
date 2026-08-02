@@ -134,6 +134,9 @@ export async function createNewLecture(
       status: 'success',
       data: {
         lecture: newLecture,
+        // the caller needs it to revalidate the course page, a lecture only
+        // carries its moduleId
+        courseId: module.courseId,
       },
       message: 'Lecture created and added to module successfully',
     })
@@ -249,7 +252,7 @@ export async function updateLecture(
 
     return res.status(200).json({
       status: 'success',
-      data: { lecture: updatedLecture },
+      data: { lecture: updatedLecture, courseId: course.id },
       message: 'Lecture updated successfully',
     })
   } catch (error) {
@@ -420,6 +423,7 @@ export async function reorderLectures(
 
     return res.status(200).json({
       status: 'success',
+      data: { courseId: module.courseId },
       message: 'Lectures reordered successfully',
     })
   } catch (error) {

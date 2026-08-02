@@ -7,6 +7,7 @@ import {
   updateCourse,
   createNewCourse,
   getCourse,
+  getCourseEnrollment,
   getYourCourses,
   getYourCourse,
   getEnrolledCourses,
@@ -49,6 +50,11 @@ courseRouter.route('/:courseId').get(optionalSession, getCourse)
 
 // Get a specific course created by the instructor
 courseRouter.route('/yourcourse/:courseId').get(session, getYourCourse)
+
+// Check whether the current user is enrolled in a course
+courseRouter
+  .route('/:courseId/enrollment')
+  .get(optionalSession, getCourseEnrollment)
 
 // enroll in a course
 courseRouter.route('/enroll/:courseId').post(session, enrollCourse)

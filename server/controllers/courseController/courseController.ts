@@ -285,6 +285,51 @@ export async function getCourse(
   }
 }
 
+// whether the current user is enrolled in a course. this lives apart from
+// getCourse so the client can fetch the public course payload without sending
+// cookies, which lets next cache one copy of it for every visitor
+export async function getCourseEnrollment(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const { courseId } = req.params
+  if (!courseId) {
+    return next(new AppError('Course ID is required', 400))
+  }
+
+  try {
+    // a visitor with no session is simply not enrolled, it is not an error
+    if (!req.user) {
+      return res.status(200).json({
+        status: 'success',
+        data: { isEnrolled: false },
+      })
+    }
+
+    const enrollment = await prisma.enrolledCourse.findFirst({
+      where: {
+        userId: req.user.id,
+        courseId,
+      },
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: { isEnrolled: enrollment !== null },
+    })
+  } catch (error: unknown) {
+    return next(
+      new AppError(
+        `internal server error while checking enrollment ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`,
+        500,
+      ),
+    )
+  }
+}
+
 interface CreateCourse {
   title: string
   description: string
