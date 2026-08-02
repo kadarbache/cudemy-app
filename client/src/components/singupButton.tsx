@@ -15,10 +15,12 @@ import { Input } from "./ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { signupAction } from "@/actions/authentication";
+import { useAuthDialog } from "@/util/useAuthDialog";
 import toast from "react-hot-toast";
 
 export const SignupButton = () => {
   const [state, formAction, pending] = useActionState(signupAction, null);
+  const { open, onOpenChange } = useAuthDialog("signup");
 
   useEffect(() => {
     if (state?.status === "success") {
@@ -37,7 +39,7 @@ export const SignupButton = () => {
   }, [state]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       {/* <form action={formAction}> */}
       <DialogTrigger asChild>
         <button className="text-lg lg:text-xl py-2.5 px-8 rounded-[8px] text-center transparent inner-border border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold cursor-pointer hover:bg-[var(--primary-color)]/10 transition-all">
