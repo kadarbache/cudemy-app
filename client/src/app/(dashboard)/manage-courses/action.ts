@@ -6,7 +6,8 @@ import { formatZodErrors } from "../../(home)/instructor/zodTypes";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { cookies } from "next/headers";
 import { getCookies } from "@/lib/helpers";
-import { revalidatePath } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 type ServerActionResponse =
   | {
@@ -95,6 +96,9 @@ export async function createCourse(
       return { status: "error", message: "Failed to create course" };
     }
     revalidatePath("/manage-courses");
+    revalidateTag(cacheTags.coursesList);
+    // the new course bumps totalCourses on every page this instructor teaches
+    revalidateTag(cacheTags.instructorProfiles);
     return { status: "success", message: "Course created successfully" };
   } catch {
     return { status: "error", message: "Something went wrong" };
@@ -161,6 +165,10 @@ export async function updateCourse(
       return { status: "error", message: "Failed to update course" };
     }
     revalidatePath("/manage-courses");
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
+    // the title and thumbnail show in the feed too
+    revalidateTag(cacheTags.coursesList);
     return { status: "success", message: "Course updated successfully" };
   } catch {
     return { status: "error", message: "Something went wrong" };
@@ -211,6 +219,8 @@ export async function createModule(
       return { status: "error", message: "Failed to create module" };
     }
 
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
     return { status: "success", message: "Module created successfully" };
   } catch {
     return { status: "error", message: "Something went wrong" };
@@ -254,6 +264,13 @@ export async function updateModule(
     if (!updatedModule.ok) {
       return { status: "error", message: "Failed to update module" };
     }
+
+    // a module only carries its own id in the form, the course it belongs to
+    // comes back in the response
+    const { data: updated } = await updatedModule.json();
+    const courseId = updated.module.courseId as string;
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
     return {
       status: "success",
       message: "Module updated successfully",
@@ -282,6 +299,14 @@ export async function deleteModule(
     if (!deletedModule.ok) {
       return { status: "error", message: "Failed to delete module" };
     }
+
+    const { data: deleted } = await deletedModule.json();
+    const courseId = deleted.module.courseId as string;
+    revalidatePath("/manage-courses");
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
+    // its lectures went with it, so the feed's lecture count changed
+    revalidateTag(cacheTags.coursesList);
     return {
       status: "success",
       message: "Module deleted successfully",
@@ -311,6 +336,10 @@ export async function deleteCourse(
       return { status: "error", message: "Failed to delete course" };
     }
     revalidatePath("/manage-courses");
+    revalidateTag(cacheTags.coursesList);
+    // so the detail page stops being served from cache and starts 404ing
+    revalidateTag(cacheTags.course(courseId));
+    revalidateTag(cacheTags.instructorProfiles);
     return {
       status: "success",
       message: "Course deleted successfully",
@@ -388,6 +417,14 @@ export async function createLecture(
       }
       return { status: "error", message: errorMessage };
     }
+
+    const { data: created } = await newLecture.json();
+    const courseId = created.courseId as string;
+    revalidatePath("/manage-courses");
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
+    // numberOfLectures shows in the feed
+    revalidateTag(cacheTags.coursesList);
     return {
       status: "success",
       message: "Lecture created successfully",
@@ -457,6 +494,10 @@ export async function updateLecture(
       return { status: "error", message: errorMessage };
     }
 
+    const { data: updated } = await updatedLecture.json();
+    const courseId = updated.courseId as string;
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
     return {
       status: "success",
       message: "Lecture updated successfully",
@@ -498,7 +539,12 @@ export async function reorderLectures(
       return { status: "error", message: errorMessage };
     }
 
-    revalidatePath("/manage-courses");
+    // the public page takes its preview video from the first lecture, so a
+    // reorder is not just a dashboard change
+    const { data } = await response.json();
+    const courseId = data.courseId as string;
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
     return {
       status: "success",
       message: "Lectures reordered successfully",
@@ -538,7 +584,9 @@ export async function reorderModules(
       return { status: "error", message: errorMessage };
     }
 
-    revalidatePath("/manage-courses");
+    // same as reorderLectures, this moves the preview video
+    revalidatePath(`/manage-courses/${courseId}`);
+    revalidateTag(cacheTags.course(courseId));
     return {
       status: "success",
       message: "Modules reordered successfully",

@@ -13,26 +13,28 @@ import durationFormatterString from "@/util/durationFormatter";
 import { enrollCourseAction } from "@/actions/course";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function PricingCard({ course }: { course: ICourse }) {
+export default function PricingCard({
+  course,
+  isEnrolled,
+}: {
+  course: ICourse;
+  isEnrolled: boolean;
+}) {
   const duration = durationFormatterString(course.totalOfHours);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const handleEnroll = () => {
     startTransition(async () => {
       const result = await enrollCourseAction(course.id);
       if (result.status === "success") {
         toast.success(result.message as string);
-        router.refresh();
       } else {
         toast.error(result.message as string);
       }
     });
   };
-  const isEnrolled = course.isEnrolled;
 
   return (
     <>

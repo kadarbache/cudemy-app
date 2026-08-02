@@ -1,7 +1,8 @@
 "use server";
 import { apiRoutes } from "@/lib/apiRoutes";
+import { cacheTags } from "@/lib/cacheTags";
 import { cookies } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { ICourse } from "@/util/interfaces";
 
 // search courses by title, description or instructor name
@@ -37,9 +38,9 @@ export async function enrollCourseAction(courseId: string) {
     });
 
     const data = await response.json();
-    console.log(data.ok);
     if (response.ok) {
-      revalidatePath(`/courses/${courseId}`);
+      // only this course, enrolling is far too frequent to bust anything wider
+      revalidateTag(cacheTags.course(courseId));
       return { status: "success", message: "Enrolled successfully" };
     } else {
       return {

@@ -1,5 +1,6 @@
 "use server";
 import { apiRoutes } from "@/lib/apiRoutes";
+import { cacheTags } from "@/lib/cacheTags";
 import { cookies } from "next/headers";
 import { parseSetCookie } from "../util/parseSetCookie";
 import { signinSchema, signupSchema } from "./zod";
@@ -20,7 +21,7 @@ export async function getUserSession() {
     credentials: "include",
     next: {
       revalidate: 60,
-      tags: ["userSession"],
+      tags: [cacheTags.userSession],
     },
   });
 

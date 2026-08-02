@@ -2,9 +2,8 @@ import { Banner } from "@/components/banner";
 import { NavigationFixed } from "@/components/navigation";
 import { TabMenu } from "@/components/tab-menu";
 import VideoPlayerComponent from "@/components/vedioPlayer";
-import { apiRoutes } from "@/lib/apiRoutes";
-import { ICourse, Module } from "@/util/interfaces";
-import { cookies } from "next/headers";
+import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
+import { Module } from "@/util/interfaces";
 import { notFound } from "next/navigation";
 import InstructorProfile from "../_components/instructorProfile";
 import PricingCard from "../_components/pricing-card";
@@ -19,23 +18,13 @@ const Page = async ({
   const { IdCourse } = await params;
   const { vedio } = await searchParams;
 
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
+  // the two are independent, so don't make one wait on the other
+  const [course, isEnrolled] = await Promise.all([
+    getPublicCourse(IdCourse),
+    getCourseEnrollment(IdCourse),
+  ]);
 
-  const response = await fetch(apiRoutes.courses.getCourseById(IdCourse), {
-    headers: { Cookie: cookieHeader },
-    credentials: "include",
-    next: {
-      revalidate: 60,
-    },
-  });
-
-  if (!response.ok) notFound();
-  const { data } = await response.json();
-  const course: ICourse = data;
+  if (!course) notFound();
 
   // this is hard coded now and every course will have a preview lecture
   const previewLecture = course?.modules?.flatMap((m: Module) => m.lectures); // merge all lectures into one array
@@ -59,7 +48,7 @@ const Page = async ({
 
             {/* price card for mobiles */}
             <div className="block md:hidden py-2">
-              <PricingCard course={course} />
+              <PricingCard course={course} isEnrolled={isEnrolled} />
             </div>
             {/* course title */}
             <h1 className="text-lg font-bold text-popover-foreground leading-7">
@@ -81,7 +70,7 @@ const Page = async ({
           </div>
           {/* Block for puying the course */}
           <div className="w-full hidden md:block md:grid-cols-1 md:col-start-3 md:col-end-4 self-start justify-self-center max-w-md mx-auto bg-popover rounded-lg p-6 shadow-search-ba font-poppins">
-            <PricingCard course={course} />
+            <PricingCard course={course} isEnrolled={isEnrolled} />
           </div>
         </div>
       </section>

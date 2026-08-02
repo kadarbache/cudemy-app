@@ -1,8 +1,7 @@
-import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { apiRoutes } from "@/lib/apiRoutes";
+import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
 import { NavigationFixed } from "@/components/navigation";
-import { ICourse, Lecture, Module } from "@/util/interfaces";
+import { Lecture, Module } from "@/util/interfaces";
 import VideoPanel from "./_components/video-panel";
 import LessonSidebar from "./_components/lesson-sidebar";
 
@@ -16,23 +15,16 @@ const Page = async ({
   const { IdCourse } = await params;
   const { lecture } = await searchParams;
 
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
+  const [course, isEnrolled] = await Promise.all([
+    getPublicCourse(IdCourse),
+    getCourseEnrollment(IdCourse),
+  ]);
 
-  const response = await fetch(apiRoutes.courses.getCourseById(IdCourse), {
-    headers: { Cookie: cookieHeader },
-    credentials: "include",
-    next: { revalidate: 60 },
-  });
+  if (!course) notFound();
 
-  if (!response.ok) notFound();
-  const { data } = await response.json();
-  const course: ICourse = data;
-
-  if (!course?.isEnrolled) {
+  // the gate reads an uncached fetch now, so it can no longer let someone in on
+  // a stale enrollment
+  if (!isEnrolled) {
     redirect(`/courses/${IdCourse}`);
   }
 

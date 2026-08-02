@@ -4,6 +4,8 @@ import { apiRoutes } from "@/lib/apiRoutes";
 import { AddStepRoutes } from "../types";
 import { InstructorData, stepOneSchema, stepTwoSchema } from "../zodTypes";
 import { getCookies } from "@/lib/helpers";
+import { cacheTags } from "@/lib/cacheTags";
+import { revalidateTag } from "next/cache";
 
 export async function submitForm(
   instructorData: InstructorData,
@@ -44,6 +46,11 @@ export async function submitForm(
     if (!response.ok) {
       return { success: false, message: data.message, redirect: "/dashboard" };
     }
+
+    // registering pushes the instructor role onto the user, so the cached
+    // session has to go or the navigation and the dashboard stay locked.
+    // no course tag needed, they cannot own a course yet
+    revalidateTag(cacheTags.userSession);
 
     const retVal = {
       success: true,

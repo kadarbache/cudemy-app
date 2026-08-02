@@ -1,6 +1,7 @@
 "use server";
 
 import { apiRoutes } from "@/lib/apiRoutes";
+import { cacheTags } from "@/lib/cacheTags";
 import { getCookies } from "@/lib/helpers";
 import { revalidateTag } from "next/cache";
 import z from "zod";
@@ -41,7 +42,9 @@ export const updateProfile = async (
     });
     const responseData = await response.json();
     if (response.ok) {
-      revalidateTag("userSession");
+      revalidateTag(cacheTags.userSession);
+      // the name shows on every course page this user teaches
+      revalidateTag(cacheTags.instructorProfiles);
       return { status: "success", message: responseData.message };
     } else {
       return { status: "error", message: responseData.message };
@@ -66,9 +69,10 @@ export const uploadProfileImage = async (formData: FormData) => {
       },
     );
 
-    revalidateTag("userSession");
     const data = await response.json();
     if (response.ok) {
+      revalidateTag(cacheTags.userSession);
+      revalidateTag(cacheTags.instructorProfiles);
       return {
         status: "success",
         message: "profile image updated successfully",

@@ -5,37 +5,20 @@ import Footer from "@/components/footer";
 import { Hero } from "@/components/hero";
 import MobileHero from "@/components/mobile-hero";
 import MobileNavigation from "@/components/mobileNavigation";
+import { getUserSession } from "@/actions/authentication";
 import { apiRoutes } from "@/lib/apiRoutes";
-import { cookies } from "next/dist/server/request/cookies";
+import { PUBLIC_COURSE_REVALIDATE, cacheTags } from "@/lib/cacheTags";
 
 const Page = async function () {
   const data = await fetch(apiRoutes.courses.getAllCourses, {
     next: {
-      revalidate: 60,
+      revalidate: PUBLIC_COURSE_REVALIDATE,
+      // the feed shows the instructor name, so it goes stale with their profile
+      tags: [cacheTags.coursesList, cacheTags.instructorProfiles],
     },
   });
 
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
-
-  let userSession;
-  const userSessionResponse = await fetch(apiRoutes.user.getUserSession, {
-    headers: { Cookie: cookieHeader },
-    credentials: "include",
-    next: {
-      revalidate: 60,
-    },
-  });
-
-  if (!userSessionResponse.ok) userSession = null;
-  else {
-    const userSessionData = await userSessionResponse.json();
-    userSession = userSessionData.data.user;
-    console.log("user session", userSession);
-  }
+  const userSession = await getUserSession();
 
   const response = await data.json();
   if (!data.ok) {

@@ -21,6 +21,8 @@ export const apiRoutes = {
     searchCourses: (query: string) =>
       `${API_BASE_URL}/course?search=${encodeURIComponent(query)}`,
     getCourseById: (id: string) => `${API_BASE_URL}/course/${id}`,
+    getCourseEnrollment: (id: string) =>
+      `${API_BASE_URL}/course/${id}/enrollment`,
     createCourse: `${API_BASE_URL}/course/newcourse`,
     getYourCourses: `${API_BASE_URL}/course/yourcourses`,
     getEnrolledCourses: `${API_BASE_URL}/course/enrolled`,
