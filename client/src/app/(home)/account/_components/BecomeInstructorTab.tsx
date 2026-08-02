@@ -57,7 +57,7 @@ export default function BecomeInstructorTab() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 mt-8">
+    <div className="w-full flex flex-col items-center gap-4 mt-8 mb-16">
       <p className="text-muted-foreground text-sm max-w-xl text-center">
         Tell us what you teach and we will set your instructor account up right
         away.
@@ -108,6 +108,29 @@ export default function BecomeInstructorTab() {
           onChange={(value) => update("qualification", value)}
         />
 
+        <Label htmlFor="sampleContentUrl" className="w-[80%]">
+          Share a link to your existing content (YouTube, portfolio, previous
+          courses, etc.)
+        </Label>
+        <input
+          type="url"
+          id="sampleContentUrl"
+          name="sampleContentUrl"
+          value={form.sampleContentUrl}
+          placeholder="https://youtube.com/your-video-sample or https://your-portfolio.com"
+          onChange={(e) => update("sampleContentUrl", e.target.value)}
+          className={inputClassName}
+        />
+
+        <InstructorFormCheckbox
+          selectedOption={form.equipment}
+          onhandleSelectionChange={(_field, value) => update("equipment", value)}
+          checkboxId="equipment"
+          label="I confirm I have access to necessary equipment for creating quality course content"
+          paragraph="Confirm that you have access to basic recording equipment (microphone, camera, and screen
+  recording software) to ensure your students receive a professional learning experience."
+        />
+
         <InstructorFormCheckbox
           selectedOption={form.termsAndConditions}
           onhandleSelectionChange={(_field, value) =>
@@ -129,29 +152,6 @@ export default function BecomeInstructorTab() {
           }
           paragraph="By checking this box, you agree to our Instructor Terms of Service and commit to maintaining
   high-quality standards for all course content you publish on our platform."
-        />
-
-        <InstructorFormCheckbox
-          selectedOption={form.equipment}
-          onhandleSelectionChange={(_field, value) => update("equipment", value)}
-          checkboxId="equipment"
-          label="I confirm I have access to necessary equipment for creating quality course content"
-          paragraph="Confirm that you have access to basic recording equipment (microphone, camera, and screen
-  recording software) to ensure your students receive a professional learning experience."
-        />
-
-        <Label htmlFor="sampleContentUrl" className="w-[80%]">
-          Share a link to your existing content (YouTube, portfolio, previous
-          courses, etc.)
-        </Label>
-        <input
-          type="url"
-          id="sampleContentUrl"
-          name="sampleContentUrl"
-          value={form.sampleContentUrl}
-          placeholder="https://youtube.com/your-video-sample or https://your-portfolio.com"
-          onChange={(e) => update("sampleContentUrl", e.target.value)}
-          className={inputClassName}
         />
 
         <Button
