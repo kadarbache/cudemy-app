@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth.ts'
 import type { Request, Response } from 'express'
 import { APIError } from 'better-auth/api'
+import { fromNodeHeaders } from 'better-auth/node'
 
 export async function signupEmailAndPassword(
   req: Request<
@@ -30,6 +31,33 @@ export async function signupEmailAndPassword(
     return res
       .status(201)
       .json({ status: 'success', message: 'signed in the user', data })
+  } catch (error) {
+    if (error instanceof APIError) {
+      return res
+        .status(401)
+        .json({ code: error?.body?.code, message: error.body?.message })
+    } else {
+      return res
+        .status(500)
+        .json({ success: false, error: 'Internal Server Error' })
+    }
+  }
+}
+
+export async function logoutUser(req: Request, res: Response) {
+  try {
+    const data = await auth.api.signOut({
+      asResponse: true,
+      headers: fromNodeHeaders(req.headers),
+    })
+
+    const cookie = data.headers.get('set-cookie')
+    if (cookie) res.setHeader('Set-Cookie', cookie)
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'signed out the user',
+    })
   } catch (error) {
     if (error instanceof APIError) {
       return res

@@ -9,6 +9,7 @@ export const apiRoutes = {
   auth: {
     signUpEmail: `${API_BASE_URL}/auth/sign-up/email`,
     signInEmail: `${API_BASE_URL}/auth/sign-in/email`,
+    signOut: `${API_BASE_URL}/auth/sign-out`,
   },
   user: {
     getUserSession: `${API_BASE_URL}/user`,

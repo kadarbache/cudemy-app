@@ -11,7 +11,7 @@ import Browse from "@/components/browse";
 import { SearchDialog } from "@/components/search-dialog";
 import { SigninButton } from "@/components/signinButton";
 import { SignupButton } from "@/components/singupButton";
-import { Avatar } from "@/components/ui/avatar";
+import { ProfileMenu } from "@/components/profileMenu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -48,19 +48,7 @@ export const Navigation = ({
                 <Cart className="" />
               </button>
             </div>
-            <Link href="/account">
-              <Image
-                src={
-                  userSession.image === "default.png"
-                    ? "/assets/default.png"
-                    : userSession.image || "/assets/default.png"
-                }
-                alt="User Image"
-                width={36}
-                height={36}
-                className="rounded-full"
-              />
-            </Link>
+            <ProfileMenu userSession={userSession} />
           </div>
         ) : (
           <div className="flex items-center gap-5">
@@ -137,19 +125,11 @@ export const NavigationFixed = () => {
             <div className="p-2 hover:bg-popover-foreground/7 rounded-md">
               <Cart className="cursor-pointer" />
             </div>
-            <Avatar asChild className="w-9 h-9">
-              {isPending ? (
-                <Skeleton className="h-[36px] w-[36px] rounded-full" />
-              ) : (
-                <Image
-                  src={data?.image === "default.png" ? "/assets/default.png" : (data?.image || "/assets/default.png")}
-                  alt="User Image"
-                  width={36}
-                  height={36}
-                  className="rounded-full"
-                />
-              )}
-            </Avatar>
+            {isPending || !data ? (
+              <Skeleton className="h-[36px] w-[36px] rounded-full" />
+            ) : (
+              <ProfileMenu userSession={data} className="w-9 h-9" />
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-5">

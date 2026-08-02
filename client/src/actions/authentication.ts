@@ -1,7 +1,9 @@
 "use server";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { cacheTags } from "@/lib/cacheTags";
+import { getCookies } from "@/lib/helpers";
 import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
 import { parseSetCookie } from "../util/parseSetCookie";
 import { signinSchema, signupSchema } from "./zod";
 import { formatZodErrors } from "../app/(home)/instructor/zodTypes";
@@ -171,6 +173,39 @@ export async function signinAction(
     }
   } catch (error: unknown) {
     console.error("Signin error:", error);
+    return { status: "error", message: "something went wrong" };
+  }
+}
+
+export async function signOutAction(): Promise<{
+  status: string;
+  message: string;
+}> {
+  try {
+    const response = await fetch(apiRoutes.auth.signOut, {
+      method: "POST",
+      headers: { cookie: await getCookies() },
+      credentials: "include",
+    });
+
+    const setCookieHeader = response.headers.get("set-cookie");
+    if (setCookieHeader) {
+      const parsedCookie = parseSetCookie(setCookieHeader);
+      (await cookies()).delete(parsedCookie.name);
+    }
+
+    if (!response.ok) {
+      const data = await response.json();
+      return {
+        status: "error",
+        message: data.message || "An unknown error occurred.",
+      };
+    }
+
+    revalidateTag(cacheTags.userSession);
+    return { status: "success", message: "Signed out" };
+  } catch (error) {
+    console.error("Sign out error:", error);
     return { status: "error", message: "something went wrong" };
   }
 }
