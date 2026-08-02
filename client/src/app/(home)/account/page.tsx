@@ -40,25 +40,26 @@ export default async function page({
         labels={
           isInstructor ? { "Become an Instructor": "Instructor Profile" } : {}
         }
-      />
-      {tab === "Account" && (
-        <AccountTab image={image} userSession={userSession} />
-      )}
-      {tab === "Become an Instructor" &&
-        (!userSession ? (
-          <p className="text-center text-muted-foreground mt-10">
-            Sign in to register as an instructor.
-          </p>
-        ) : !isInstructor ? (
-          <BecomeInstructorTab />
-        ) : instructor ? (
-          <InstructorProfileSummary instructor={instructor} />
-        ) : (
-          <p className="text-center text-muted-foreground mt-10">
-            We could not load your instructor profile right now. Please try
-            again later.
-          </p>
-        ))}
+      >
+        {tab === "Account" && (
+          <AccountTab image={image} userSession={userSession} />
+        )}
+        {tab === "Become an Instructor" &&
+          (!userSession ? (
+            <p className="text-center text-muted-foreground mt-10">
+              Sign in to register as an instructor.
+            </p>
+          ) : !isInstructor ? (
+            <BecomeInstructorTab />
+          ) : instructor ? (
+            <InstructorProfileSummary instructor={instructor} />
+          ) : (
+            <p className="text-center text-muted-foreground mt-10">
+              We could not load your instructor profile right now. Please try
+              again later.
+            </p>
+          ))}
+      </Tabs>
     </div>
   );
 }
