@@ -43,5 +43,6 @@ export const apiRoutes = {
   },
   instructor: {
     registerInstructor: `${API_BASE_URL}/instructor/register`,
+    getInstructorProfile: `${API_BASE_URL}/instructor/me`,
   },
 };

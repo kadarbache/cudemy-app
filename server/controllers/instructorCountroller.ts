@@ -2,6 +2,43 @@ import prisma from '@/lib/prisma.ts'
 import type { User } from '@/utils/types.ts'
 import type { NextFunction, Request, Response } from 'express'
 
+// the signed in instructor's own registration record, read only for now
+export async function getInstructorProfile(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  try {
+    const user: User | undefined = req.user
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found',
+      })
+    }
+
+    const instructor = await prisma.instructor.findUnique({
+      where: { userId: user.id },
+    })
+    if (instructor === null) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Instructor profile not found',
+      })
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: instructor,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+    })
+  }
+}
+
 export async function registerInstructor(
   req: Request,
   res: Response,

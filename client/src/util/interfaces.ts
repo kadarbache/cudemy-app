@@ -18,6 +18,19 @@ export interface IInstructorProfile {
   instructorBio: string | null;
 }
 
+// the instructor's own registration record, everything they filled in
+export interface InstructorRegistration {
+  id: string;
+  expertise: string[];
+  specificSkillsToTeach: string[];
+  yearsOfExperience: number;
+  qualifications: string[];
+  instructorBio: string | null;
+  guidelinesReviewed: boolean;
+  hasEquipment: boolean;
+  sampleContentUrl: string | null;
+}
+
 export interface IInstructorStats {
   totalCourses: number;
   totalStudents: number;

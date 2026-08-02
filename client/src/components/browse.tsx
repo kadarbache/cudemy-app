@@ -50,7 +50,10 @@ export default function Browse({
                 Understand the structure and features
               </ListItem>
               {userSession && !userSession.roles?.includes("instructor") && (
-                <ListItem href="/instructor/terms" title="Be an Instructor">
+                <ListItem
+                  href="/account?tab=Become%20an%20Instructor"
+                  title="Be an Instructor"
+                >
                   Information on becoming a teacher
                 </ListItem>
               )}

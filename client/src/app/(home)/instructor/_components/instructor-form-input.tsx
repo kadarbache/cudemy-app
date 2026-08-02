@@ -25,7 +25,7 @@ type InputSelectProps = {
 };
 type InputCheckboxProps = {
   checkboxId: string;
-  label: string;
+  label: React.ReactNode;
   paragraph?: string;
   selectedOption: boolean;
   onhandleSelectionChange: (field: string, value: boolean) => void;

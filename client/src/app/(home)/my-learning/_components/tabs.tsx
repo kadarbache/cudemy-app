@@ -5,13 +5,23 @@ import { useState } from "react";
 // Define the type for the tabs
 export type Tab =
   | "Account"
+  | "Become an Instructor"
   | "Courses"
   | "Wishlist"
   | "Completed"
   | "In Progress"
   | "Archived";
 
-export default function Tabs({ tab }: { tab: Tab }) {
+export default function Tabs({
+  tab,
+  hide = [],
+  labels = {},
+}: {
+  tab: Tab;
+  hide?: Tab[];
+  // the search param stays the same, only the button copy changes
+  labels?: Partial<Record<Tab, string>>;
+}) {
   const [activeTab, setActiveTab] = useState<Tab>(tab);
   const router = useRouter();
   const pathname = usePathname();
@@ -25,14 +35,16 @@ export default function Tabs({ tab }: { tab: Tab }) {
     setActiveTab(tab);
   }
 
-  const tabs: Tab[] = [
+  const allTabs: Tab[] = [
     "Account",
+    "Become an Instructor",
     "Courses",
     "Wishlist",
     "Completed",
     "In Progress",
     "Archived",
   ];
+  const tabs = allTabs.filter((tab) => !hide.includes(tab));
 
   return (
     <nav className="border-b md:border-none">
@@ -47,7 +59,7 @@ export default function Tabs({ tab }: { tab: Tab }) {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {tab}
+            {labels[tab] ?? tab}
             {activeTab === tab && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
