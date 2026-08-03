@@ -102,9 +102,15 @@ export const Feed = ({ data }: { data: ICourse[] }) => {
       <h2 className="text-popover-foreground font-poppins text-xl font-bold leading-[26px]">
         Here are your personalized recommendations
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-        <Card courses={data} />
-      </div>
+      {data.length === 0 ? (
+        <p className="text-popover-foreground/60 font-poppins mt-8">
+          No courses in this category yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+          <Card courses={data} />
+        </div>
+      )}
     </section>
   );
 };

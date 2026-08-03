@@ -1,5 +1,4 @@
-import { Feed } from "@/app/(home)/courses/_components/feed";
-import { Filtering } from "@/app/(home)/courses/_components/filtering";
+import { CourseCatalog } from "@/app/(home)/courses/_components/course-catalog";
 import { Banner } from "@/components/banner";
 import Footer from "@/components/footer";
 import { Hero } from "@/components/hero";
@@ -33,8 +32,7 @@ const Page = async function () {
       <MobileNavigation />
       <Hero userSession={userSession} />
       <MobileHero />
-      <Filtering />
-      <Feed data={courses} />
+      <CourseCatalog data={courses} />
       <Footer />
     </>
   );
