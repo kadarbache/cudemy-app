@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import Footer from "@/components/footer";
 import { NavigationFixed } from "@/components/navigation";
+import { PageHeader } from "@/components/page-header";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { IEnrolledCourse } from "@/util/interfaces";
 import { CourseList } from "./_components/course-list";
@@ -27,18 +28,20 @@ async function getEnrolledCourses(): Promise<IEnrolledCourse[] | null> {
 const Page = async () => {
   const courses = await getEnrolledCourses();
   return (
-    <>
+    // min-h-screen + flex-1 on the content keeps the footer at the bottom
+    // instead of leaving background below it on a short list
+    <div className="flex min-h-screen flex-col">
       <NavigationFixed />
-      <div className="container mx-auto mt-[var(--margin-section-top)] px-4">
-        <h1 className="py-3 lg:py-0 text-2xl font-bold text-center text-popover-foreground">
-          My Learning
-        </h1>
-        <p className="text-center text-popover-foreground/50 mt-2">
-          Here you can find your enrolled courses.
-        </p>
-      </div>
+      <PageHeader
+        title="My Learning"
+        breadcrumbs={[
+          { label: "Courses", href: "/courses" },
+          { label: "My Learning" },
+        ]}
+        subtitle="Here you can find your enrolled courses."
+      />
 
-      <section className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10 min-h-[40vh]">
+      <section className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10 flex-1">
         {courses === null ? (
           <div className="text-center py-16">
             <p className="text-popover-foreground/60">
@@ -68,7 +71,7 @@ const Page = async () => {
         )}
       </section>
       <Footer />
-    </>
+    </div>
   );
 };
 
