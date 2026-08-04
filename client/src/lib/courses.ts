@@ -28,6 +28,21 @@ export async function getPublicCourse(
   return data as ICourse;
 }
 
+// the public catalogue, cached and tagged exactly like the courses feed
+export async function getAllCourses(): Promise<ICourse[]> {
+  const response = await fetch(apiRoutes.courses.getAllCourses, {
+    next: {
+      revalidate: PUBLIC_COURSE_REVALIDATE,
+      tags: [cacheTags.coursesList, cacheTags.instructorProfiles],
+    },
+  });
+
+  if (!response.ok) return [];
+
+  const { data } = await response.json();
+  return data.courses ?? [];
+}
+
 // per user, so never cached and never tagged
 export async function getCourseEnrollment(courseId: string): Promise<boolean> {
   const response = await fetch(apiRoutes.courses.getCourseEnrollment(courseId), {

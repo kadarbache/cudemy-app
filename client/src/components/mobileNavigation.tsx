@@ -3,8 +3,8 @@
 import { Search, Menu, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import Cart from "../../public/assets/Cart.svg";
 import Image from "next/image";
+import { CartButton } from "./cart-button";
 import { getUserSession } from "../actions/authentication";
 import { UserSession } from "../util/interfaces";
 import { SearchDialog } from "./search-dialog";
@@ -58,9 +58,7 @@ export default function MobileNavigation() {
                   onClick={() => setIsSearchOpen(true)}
                 />
               </div>
-              <div className="p-2 hover:bg-popover-foreground/7 rounded-md">
-                <Cart />
-              </div>
+              <CartButton />
             </div>
           </div>
         </div>

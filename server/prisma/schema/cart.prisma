@@ -1,0 +1,14 @@
+model CartItem {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String @db.ObjectId
+
+  addedAt DateTime @default(now())
+
+  // a course sits in a cart once or not at all, there is no quantity
+  @@unique([userId, courseId])
+  @@map("cart_items")
+}

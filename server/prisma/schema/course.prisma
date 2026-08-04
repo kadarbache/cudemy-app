@@ -15,6 +15,7 @@ model Course {
   instructorId String           @db.ObjectId
   questions    Question[]
   students     EnrolledCourse[]
+  cartItems    CartItem[]
 
   isPublished      Boolean  @default(false)
   numberOfLectures Int      @default(0)

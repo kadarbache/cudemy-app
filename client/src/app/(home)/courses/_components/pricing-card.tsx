@@ -6,30 +6,53 @@ import {
   Volume2,
   NotebookPen,
   Loader2,
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ICourse } from "@/util/interfaces";
 import durationFormatterString from "@/util/durationFormatter";
 import { enrollCourseAction } from "@/actions/course";
-import { useTransition } from "react";
+import { addToCartAction } from "@/actions/cart";
+import { useState, useTransition } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
 export default function PricingCard({
   course,
   isEnrolled,
+  isInCart,
 }: {
   course: ICourse;
   isEnrolled: boolean;
+  isInCart: boolean;
 }) {
   const duration = durationFormatterString(course.totalOfHours);
   const [isPending, startTransition] = useTransition();
+  const [isAdding, startAdding] = useTransition();
+  // the page it sits on is cached per request, so the button tracks the add
+  // itself rather than waiting for the server prop to come back around
+  const [inCart, setInCart] = useState(isInCart);
+  const queryClient = useQueryClient();
 
   const handleEnroll = () => {
     startTransition(async () => {
       const result = await enrollCourseAction(course.id);
       if (result.status === "success") {
         toast.success(result.message as string);
+      } else {
+        toast.error(result.message as string);
+      }
+    });
+  };
+
+  const handleAddToCart = () => {
+    startAdding(async () => {
+      const result = await addToCartAction(course.id);
+      if (result.status === "success") {
+        toast.success(result.message as string);
+        setInCart(true);
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
       } else {
         toast.error(result.message as string);
       }
@@ -82,6 +105,40 @@ export default function PricingCard({
             )}
           </Button>
         )}
+        {!isEnrolled &&
+          (inCart ? (
+            <Button
+              asChild
+              variant="outline"
+              className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
+              size="lg"
+            >
+              <Link href="/cart" className="flex items-center justify-center">
+                <ShoppingCart size={28} className="mr-2 flex !w-7 !h-7" />
+                <p>Go to Cart</p>
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              variant="outline"
+              className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
+              size="lg"
+            >
+              {isAdding ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={28} className="mr-2 flex !w-7 !h-7" />
+                  <p>Add to Cart</p>
+                </>
+              )}
+            </Button>
+          ))}
         {isEnrolled ? (
           <Button
             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xl py-3 rounded-lg transition-colors cursor-pointer"

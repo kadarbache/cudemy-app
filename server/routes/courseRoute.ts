@@ -29,6 +29,11 @@ import {
   reorderLectures,
 } from '../controllers/courseController/lectureController.ts'
 // import { askQuestion } from '../controllers/courseController/questionController.ts'
+import {
+  getCart,
+  addToCart,
+  removeFromCart,
+} from '../controllers/courseController/cartController.ts'
 import upload from '../utils/multer.ts'
 const courseRouter: Router = express.Router()
 
@@ -44,6 +49,16 @@ courseRouter.route('/yourcourses').get(session, getYourCourses)
 
 // Get all courses the current user is enrolled in
 courseRouter.route('/enrolled').get(session, getEnrolledCourses)
+
+// Get the courses in the current user's cart
+// this sits above /:courseId on purpose, otherwise 'cart' is read as a course id
+courseRouter.route('/cart').get(session, getCart)
+
+// Add a course to / remove a course from the current user's cart
+courseRouter
+  .route('/cart/:courseId')
+  .post(session, addToCart)
+  .delete(session, removeFromCart)
 
 // Get a specific course by its ID
 courseRouter.route('/:courseId').get(optionalSession, getCourse)

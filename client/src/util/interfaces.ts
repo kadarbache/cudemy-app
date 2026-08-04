@@ -81,6 +81,13 @@ export interface IEnrolledCourse extends ICourse {
   entrolledAt: string;
 }
 
+export interface ICartItem {
+  id: string;
+  courseId: string;
+  addedAt: string;
+  course: ICourse;
+}
+
 export interface Lecture {
   id: string;
   title: string;

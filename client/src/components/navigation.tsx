@@ -1,5 +1,4 @@
 "use client";
-import Cart from "../../public/assets/Cart.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +11,7 @@ import { SearchDialog } from "@/components/search-dialog";
 import { SigninButton } from "@/components/signinButton";
 import { SignupButton } from "@/components/singupButton";
 import { ProfileMenu } from "@/components/profileMenu";
+import { CartButton } from "@/components/cart-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -44,9 +44,7 @@ export const Navigation = ({
             </Link>
             <div>
               <ThemeToggle />
-              <button className="p-2 md:hover:bg-popover/7 hover:cursor-pointer  rounded-md transition-colors group">
-                <Cart className="" />
-              </button>
+              <CartButton />
             </div>
             <ProfileMenu userSession={userSession} />
           </div>
@@ -122,9 +120,7 @@ export const NavigationFixed = () => {
               </button>
             </Link>
             <ThemeToggle />
-            <div className="p-2 hover:bg-popover-foreground/7 rounded-md">
-              <Cart className="cursor-pointer" />
-            </div>
+            <CartButton />
             {isPending || !data ? (
               <Skeleton className="h-[36px] w-[36px] rounded-full" />
             ) : (

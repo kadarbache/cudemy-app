@@ -9,6 +9,7 @@ model User {
   language String   @default("English")
 
   enrolledCourses EnrolledCourse[]
+  cartItems       CartItem[]
   lectures        Lecture[]
   courses         Course[]
   sessions        Session[]

@@ -31,6 +31,11 @@ export const apiRoutes = {
     updateCourse: (id: string) => `${API_BASE_URL}/course/updatecourse/${id}`,
     enrollCourse: (id: string) => `${API_BASE_URL}/course/enroll/${id}`,
   },
+  cart: {
+    getCart: `${API_BASE_URL}/course/cart`,
+    addToCart: (id: string) => `${API_BASE_URL}/course/cart/${id}`,
+    removeFromCart: (id: string) => `${API_BASE_URL}/course/cart/${id}`,
+  },
   module: {
     createModule: `${API_BASE_URL}/course/newmodule`,
     updateModule: `${API_BASE_URL}/course/updatemodule`,

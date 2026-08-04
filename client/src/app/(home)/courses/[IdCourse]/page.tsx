@@ -2,6 +2,7 @@ import { Banner } from "@/components/banner";
 import { NavigationFixed } from "@/components/navigation";
 import { TabMenu } from "@/components/tab-menu";
 import VideoPlayerComponent from "@/components/vedioPlayer";
+import { getCartAction } from "@/actions/cart";
 import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
 import { Module } from "@/util/interfaces";
 import { notFound } from "next/navigation";
@@ -18,13 +19,16 @@ const Page = async ({
   const { IdCourse } = await params;
   const { vedio } = await searchParams;
 
-  // the two are independent, so don't make one wait on the other
-  const [course, isEnrolled] = await Promise.all([
+  // the three are independent, so don't make one wait on another
+  const [course, isEnrolled, cart] = await Promise.all([
     getPublicCourse(IdCourse),
     getCourseEnrollment(IdCourse),
+    getCartAction(),
   ]);
 
   if (!course) notFound();
+
+  const isInCart = cart?.some((item) => item.courseId === IdCourse) ?? false;
 
   // this is hard coded now and every course will have a preview lecture
   const previewLecture = course?.modules?.flatMap((m: Module) => m.lectures); // merge all lectures into one array
@@ -48,7 +52,11 @@ const Page = async ({
 
             {/* price card for mobiles */}
             <div className="block md:hidden py-2">
-              <PricingCard course={course} isEnrolled={isEnrolled} />
+              <PricingCard
+                course={course}
+                isEnrolled={isEnrolled}
+                isInCart={isInCart}
+              />
             </div>
             {/* course title */}
             <h1 className="text-lg font-bold text-popover-foreground leading-7">
@@ -70,7 +78,11 @@ const Page = async ({
           </div>
           {/* Block for puying the course */}
           <div className="w-full hidden md:block md:grid-cols-1 md:col-start-3 md:col-end-4 self-start justify-self-center max-w-md mx-auto bg-popover rounded-lg p-6 shadow-search-ba font-poppins">
-            <PricingCard course={course} isEnrolled={isEnrolled} />
+            <PricingCard
+              course={course}
+              isEnrolled={isEnrolled}
+              isInCart={isInCart}
+            />
           </div>
         </div>
       </section>
