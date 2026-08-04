@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { BadgeCheckIcon, LogOutIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -63,7 +64,10 @@ export function ProfileMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href="/account">Account</Link>
+          <Link href="/account">
+            <BadgeCheckIcon />
+            Account
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -71,6 +75,7 @@ export function ProfileMenu({
           disabled={isPending}
           onClick={handleLogout}
         >
+          <LogOutIcon />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
