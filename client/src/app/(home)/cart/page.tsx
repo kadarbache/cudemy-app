@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ChevronRight, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Footer from "@/components/footer";
 import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
+import { PageHeader } from "@/components/page-header";
 import { getCartAction } from "@/actions/cart";
 import { getAllCourses } from "@/lib/courses";
 import { CartRow } from "./_components/cart-row";
@@ -29,24 +30,10 @@ const Page = async () => {
       <MobileNavigation />
       <NavigationFixed />
 
-      {/* title band, same dark as the footer so the page is bookended */}
-      <div className="mt-[var(--margin-section-top)] bg-[#1B1B1B] py-10">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="font-outfit text-3xl font-bold text-white">
-            Shopping Cart
-          </h1>
-          <nav
-            aria-label="Breadcrumb"
-            className="mt-1 flex items-center gap-1 text-sm text-gray-400"
-          >
-            <Link href="/courses" className="transition-colors hover:text-white">
-              Courses
-            </Link>
-            <ChevronRight className="h-4 w-4" />
-            <span aria-current="page">Cart</span>
-          </nav>
-        </div>
-      </div>
+      <PageHeader
+        title="Shopping Cart"
+        breadcrumbs={[{ label: "Courses", href: "/courses" }, { label: "Cart" }]}
+      />
 
       <section className="container mx-auto max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
         {items === null ? (
