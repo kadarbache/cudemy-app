@@ -149,16 +149,14 @@ export default function PricingCard({
           </Button>
         ) : (
           <Button
-            asChild
+            onClick={() => toast("Wishlist is coming soon")}
             variant="outline"
             className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
             size="lg"
           >
-            <div className="flex items-center justify-center">
-              {/* ! is Tailwind's important modifier to override ShadCN's defaults */}
-              <Heart size={28} className="mr-2 flex !w-7 !h-7" />
-              <p>Wishlist</p>
-            </div>
+            {/* ! is Tailwind's important modifier to override ShadCN's defaults */}
+            <Heart size={28} className="mr-2 flex !w-7 !h-7" />
+            <p>Wishlist</p>
           </Button>
         )}
       </div>
