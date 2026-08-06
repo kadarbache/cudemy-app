@@ -1,96 +1,66 @@
-import { CircleUser } from "lucide-react";
+import { ShieldCheck, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { ICourse } from "@/util/interfaces";
+import { effectivePrice } from "@/util/price";
 
 /*
- the rating functionality be implemented in the future
+ The tier and the rating row are stand-ins. Nothing behind them exists yet:
+ the Course model has no tier flag, no rating and no review count, and the
+ catalogue endpoint returns none of the three. The price below is real.
 */
 
 function Card({ courses }: { courses: ICourse[] }) {
   return (
     <>
       {courses.map((course: ICourse) => (
-        <div
+        <Link
           key={course.id}
-          className="p-4 border-1 border-popover-foreground/10 w-auto rounded-lg bg-card text-card-foreground overflow-hidden relative"
+          href={`/courses/${course.id}`}
+          className="no-underline flex h-full flex-col p-3 border-1 border-popover-foreground/10 rounded-xl bg-card text-card-foreground transition-shadow hover:shadow-md"
         >
-          <Link href={`/courses/${course.id}`} className="no-underline">
-            {/* badge / best seller */}
-            <div className="absolute top-7 left-7 bg-[#EADB36] text-black/70 text-xs font-bold py-1 px-2 rounded-lg z-10">
-              Best Seller
-            </div>
-            {/* Thumbnail */}
-            <div className="h-[161px] w-full relative">
-              <Image
-                src={course.secureUrl}
-                alt="Thumbnail"
-                fill
-                className="absolute w-full h-full object-cover rounded-lg"
-              />
-            </div>
-            <h2 className="text-lg font-bold text-popover-foreground leading-7">
-              {course.title.toUpperCase()}
-            </h2>
-            <p className="flex items-center gap-1 text-sm text-popover-foreground/40">
-              <span>
-                <CircleUser />
-              </span>
-              {course.instructor.name}{" "}
-            </p>
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, index) => {
-                const rating = course.rating ?? 0;
-                if (rating >= index + 1) {
-                  return (
-                    <div className="w-4 h-4 relative" key={index}>
-                      <Image
-                        src="/assets/Star.svg"
-                        alt="Star"
-                        className="absolute w-full h-full"
-                        fill
-                      />
-                    </div>
-                  );
-                } else if (rating > index && rating < index + 1) {
-                  return (
-                    <div className="w-4 h-4 relative" key={index}>
-                      <Image
-                        src="/assets/HalfStar.svg"
-                        alt="Half Star"
-                        className="absolute w-fit h-fit"
-                        fill
-                      />
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div className="w-4 h-4 relative" key={index}>
-                      <Image
-                        src="/assets/Star.svg"
-                        alt="Star"
-                        className="absolute w-full h-full"
-                        fill
-                      />
-                    </div>
-                  );
-                }
-              })}
-              <span className="text-sm text-popover-foreground/60">
-                ({course.numberOfLectures})
-              </span>
-            </div>
-            {/* price */}
-            <div className="flex items-center justify-start gap-4">
-              {/* current Price */}
-              <p className="text-lg font-bold text-popover-foreground">$90</p>
-              {/* original Price */}
-              <p className="text-sm text-popover-foreground/60 line-through">
-                $120
-              </p>
-            </div>
-          </Link>
-        </div>
+          {/* Thumbnail */}
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <Image
+              src={course.secureUrl}
+              alt={course.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
+          </div>
+          <h2 className="mt-3 line-clamp-2 text-base font-bold text-popover-foreground leading-snug">
+            {course.title}
+          </h2>
+          <p className="mt-1 text-sm text-popover-foreground/50">
+            {course.instructor.name}
+          </p>
+          {/* tier + rating, both placeholders */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Badge className="bg-[#5624d0] text-white px-2 py-1">
+              <ShieldCheck />
+              Premium
+            </Badge>
+            <Badge
+              variant="outline"
+              className="px-2 py-1 border-popover-foreground/15"
+            >
+              <Star className="fill-amber-400 text-amber-400" />
+              4.6
+            </Badge>
+            <Badge
+              variant="outline"
+              className="px-2 py-1 font-normal border-popover-foreground/15 text-popover-foreground/50"
+            >
+              2,968 ratings
+            </Badge>
+          </div>
+          {/* price, pinned to the bottom so it lines up across the row */}
+          <p className="mt-auto pt-3 text-lg font-bold text-popover-foreground">
+            ${effectivePrice(course).toFixed(2)}
+          </p>
+        </Link>
       ))}
     </>
   );
