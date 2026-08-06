@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // `next dev` and `next build` both write here, and a build cleans the
+  // directory first, which deletes the running dev server's
+  // static/development and leaves it throwing ENOENT on its build manifest.
+  // Point a build at its own directory to build while dev is running:
+  //   $env:NEXT_DIST_DIR=".next-build"; npm run build
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   experimental: {
     serverActions: {
       bodySizeLimit: "100mb",
