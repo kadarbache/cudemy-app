@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { StatusScreen } from "@/components/status-screen";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ export default function NotFound() {
   return (
     <>
       <NavigationFixed />
+      <MobileNavigation hideFrom="lg" />
       <div className="mt-[var(--margin-section-top)]">
         <StatusScreen
           code="404"

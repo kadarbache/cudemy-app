@@ -1,4 +1,5 @@
 import { Banner } from "@/components/banner";
+import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { TabMenu } from "@/components/tab-menu";
 import VideoPlayerComponent from "@/components/vedioPlayer";
@@ -43,7 +44,8 @@ const Page = async ({
     <>
       <Banner />
       <NavigationFixed />
-      <section className="container max-w-7xl mx-auto py-[60px] ">
+      <MobileNavigation hideFrom="lg" />
+      <section className="container max-w-7xl mx-auto mt-[var(--margin-section-top)] py-[60px] ">
         {/* container */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-between content-start items-center relative px-4 py-2">
           {/* course */}

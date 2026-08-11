@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import Footer from "@/components/footer";
+import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { PageHeader } from "@/components/page-header";
 import { apiRoutes } from "@/lib/apiRoutes";
@@ -32,6 +33,7 @@ const Page = async () => {
     // instead of leaving background below it on a short list
     <div className="flex min-h-screen flex-col">
       <NavigationFixed />
+      <MobileNavigation hideFrom="lg" />
       <PageHeader
         title="My Learning"
         breadcrumbs={[

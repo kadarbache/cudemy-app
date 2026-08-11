@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { StatusScreen } from "@/components/status-screen";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export default function Error({
   return (
     <>
       <NavigationFixed />
+      <MobileNavigation hideFrom="lg" />
       <div className="mt-[var(--margin-section-top)]">
         <StatusScreen
           code="500"

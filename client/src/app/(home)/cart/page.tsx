@@ -29,7 +29,7 @@ const Page = async () => {
     // min-h-screen + flex-1 on the content keeps the footer at the bottom
     // instead of leaving background below it on a short cart
     <div className="flex min-h-screen flex-col">
-      <MobileNavigation />
+      <MobileNavigation hideFrom="lg" />
       <NavigationFixed />
 
       <PageHeader

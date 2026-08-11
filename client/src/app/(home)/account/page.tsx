@@ -34,7 +34,7 @@ export default async function page({
     <div className="container max-w-7xl mx-auto px-4 mt-[var(--margin-section-top)]">
       {/* navigation */}
       <NavigationFixed />
-      <MobileNavigation />
+      <MobileNavigation hideFrom="lg" />
       {/* title */}
       <h1 className="py-3 lg:py-0 text-2xl font-bold text-center text-popover-foreground">
         My Account

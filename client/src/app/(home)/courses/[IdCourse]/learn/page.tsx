@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
+import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { Lecture, Module } from "@/util/interfaces";
 import VideoPanel from "./_components/video-panel";
@@ -40,6 +41,7 @@ const Page = async ({
   return (
     <div className="min-h-screen">
       <NavigationFixed />
+      <MobileNavigation hideFrom="lg" />
       <div className="flex gap-6 max-w-[1400px] mx-auto mt-[var(--margin-section-top)] mb-5 px-5 items-start">
         <VideoPanel activeModule={activeModule} activeLecture={activeLecture} />
         <LessonSidebar course={course} activeLectureId={activeLecture?.id} />
