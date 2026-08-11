@@ -88,6 +88,13 @@ export interface ICartItem {
   course: ICourse;
 }
 
+export interface IWishlistItem {
+  id: string;
+  courseId: string;
+  addedAt: string;
+  course: ICourse;
+}
+
 export interface Lecture {
   id: string;
   title: string;

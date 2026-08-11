@@ -18,7 +18,7 @@ function Card({ courses }: { courses: ICourse[] }) {
         <Link
           key={course.id}
           href={`/courses/${course.id}`}
-          className="no-underline flex h-full flex-col p-3 border-1 border-popover-foreground/10 rounded-xl bg-card text-card-foreground transition-shadow hover:shadow-md"
+          className="group no-underline flex h-full flex-col p-3 border-1 border-popover-foreground/10 rounded-xl bg-card text-card-foreground transition-all duration-200 hover:-translate-y-1 hover:border-popover-foreground/20 hover:shadow-lg"
         >
           {/* Thumbnail */}
           <div className="relative aspect-video w-full overflow-hidden rounded-lg">
@@ -27,7 +27,7 @@ function Card({ courses }: { courses: ICourse[] }) {
               alt={course.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
           <h2 className="mt-3 line-clamp-2 text-base font-bold text-popover-foreground leading-snug">

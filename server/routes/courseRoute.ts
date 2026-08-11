@@ -34,6 +34,11 @@ import {
   addToCart,
   removeFromCart,
 } from '../controllers/courseController/cartController.ts'
+import {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+} from '../controllers/courseController/wishlistController.ts'
 import upload from '../utils/multer.ts'
 const courseRouter: Router = express.Router()
 
@@ -59,6 +64,16 @@ courseRouter
   .route('/cart/:courseId')
   .post(session, addToCart)
   .delete(session, removeFromCart)
+
+// Get the courses in the current user's wishlist
+// this sits above /:courseId on purpose, otherwise 'wishlist' is read as a course id
+courseRouter.route('/wishlist').get(session, getWishlist)
+
+// Add a course to / remove a course from the current user's wishlist
+courseRouter
+  .route('/wishlist/:courseId')
+  .post(session, addToWishlist)
+  .delete(session, removeFromWishlist)
 
 // Get a specific course by its ID
 courseRouter.route('/:courseId').get(optionalSession, getCourse)

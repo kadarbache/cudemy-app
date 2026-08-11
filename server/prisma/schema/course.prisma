@@ -16,6 +16,7 @@ model Course {
   questions    Question[]
   students     EnrolledCourse[]
   cartItems    CartItem[]
+  wishlistItems WishlistItem[]
 
   isPublished      Boolean  @default(false)
   numberOfLectures Int      @default(0)

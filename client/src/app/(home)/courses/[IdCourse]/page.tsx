@@ -3,6 +3,7 @@ import { NavigationFixed } from "@/components/navigation";
 import { TabMenu } from "@/components/tab-menu";
 import VideoPlayerComponent from "@/components/vedioPlayer";
 import { getCartAction } from "@/actions/cart";
+import { getWishlistAction } from "@/actions/wishlist";
 import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
 import { Module } from "@/util/interfaces";
 import { notFound } from "next/navigation";
@@ -19,16 +20,19 @@ const Page = async ({
   const { IdCourse } = await params;
   const { vedio } = await searchParams;
 
-  // the three are independent, so don't make one wait on another
-  const [course, isEnrolled, cart] = await Promise.all([
+  // independent, so don't make one wait on another
+  const [course, isEnrolled, cart, wishlist] = await Promise.all([
     getPublicCourse(IdCourse),
     getCourseEnrollment(IdCourse),
     getCartAction(),
+    getWishlistAction(),
   ]);
 
   if (!course) notFound();
 
   const isInCart = cart?.some((item) => item.courseId === IdCourse) ?? false;
+  const isInWishlist =
+    wishlist?.some((item) => item.courseId === IdCourse) ?? false;
 
   // this is hard coded now and every course will have a preview lecture
   const previewLecture = course?.modules?.flatMap((m: Module) => m.lectures); // merge all lectures into one array
@@ -56,6 +60,7 @@ const Page = async ({
                 course={course}
                 isEnrolled={isEnrolled}
                 isInCart={isInCart}
+                isInWishlist={isInWishlist}
               />
             </div>
             {/* course title */}
@@ -82,6 +87,7 @@ const Page = async ({
               course={course}
               isEnrolled={isEnrolled}
               isInCart={isInCart}
+              isInWishlist={isInWishlist}
             />
           </div>
         </div>

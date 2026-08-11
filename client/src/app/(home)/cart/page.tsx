@@ -5,6 +5,7 @@ import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { PageHeader } from "@/components/page-header";
 import { getCartAction } from "@/actions/cart";
+import { getWishlistAction } from "@/actions/wishlist";
 import { getAllCourses } from "@/lib/courses";
 import { CartRow } from "./_components/cart-row";
 import { CartSummary } from "./_components/cart-summary";
@@ -13,9 +14,10 @@ import { WishlistPanel } from "./_components/wishlist-panel";
 
 const Page = async () => {
   // independent, so don't make one wait on the other
-  const [items, catalogue] = await Promise.all([
+  const [items, catalogue, wishlist] = await Promise.all([
     getCartAction(),
     getAllCourses(),
+    getWishlistAction(),
   ]);
 
   const cartCourseIds = new Set(items?.map((item) => item.courseId));
@@ -76,7 +78,7 @@ const Page = async () => {
                   ))}
                 </div>
               </div>
-              <WishlistPanel />
+              <WishlistPanel items={wishlist ?? []} />
             </div>
             <CartSummary items={items} />
           </div>

@@ -1,12 +1,16 @@
+import Link from "next/link";
 import { getUserSession } from "@/actions/authentication";
+import { getWishlistAction } from "@/actions/wishlist";
 import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { UserSession } from "@/util/interfaces";
+import { CourseList } from "../my-learning/_components/course-list";
 import Tabs, { Tab } from "../my-learning/_components/tabs";
-import { getInstructorProfile } from "./action";
+import { getEnrolledCourses, getInstructorProfile } from "./action";
 import AccountTab from "./_components/AccountTab";
 import BecomeInstructorTab from "./_components/BecomeInstructorTab";
 import InstructorProfileSummary from "./_components/InstructorProfileSummary";
+import WishlistTab from "./_components/WishlistTab";
 
 export default async function page({
   searchParams,
@@ -23,6 +27,8 @@ export default async function page({
     isInstructor && tab === "Become an Instructor"
       ? await getInstructorProfile()
       : null;
+  const courses = tab === "Courses" ? await getEnrolledCourses() : null;
+  const wishlist = tab === "Wishlist" ? await getWishlistAction() : null;
 
   return (
     <div className="container max-w-7xl mx-auto px-4 mt-[var(--margin-section-top)]">
@@ -59,6 +65,37 @@ export default async function page({
               again later.
             </p>
           ))}
+        {tab === "Courses" &&
+          (courses === null ? (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">
+                We couldn&apos;t load your courses right now.
+              </p>
+              <Link
+                href="/auth/login"
+                className="text-primary hover:underline text-sm mt-2 inline-block"
+              >
+                Sign in to see your learning
+              </Link>
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">
+                You have no enrolled courses yet.
+              </p>
+              <Link
+                href="/courses"
+                className="text-primary hover:underline text-sm mt-2 inline-block"
+              >
+                Browse courses
+              </Link>
+            </div>
+          ) : (
+            <div className="px-4 py-6">
+              <CourseList courses={courses} />
+            </div>
+          ))}
+        {tab === "Wishlist" && <WishlistTab items={wishlist} />}
       </Tabs>
     </div>
   );

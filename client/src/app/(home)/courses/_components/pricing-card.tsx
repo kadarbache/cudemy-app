@@ -13,6 +13,7 @@ import { ICourse } from "@/util/interfaces";
 import durationFormatterString from "@/util/durationFormatter";
 import { enrollCourseAction } from "@/actions/course";
 import { addToCartAction } from "@/actions/cart";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions/wishlist";
 import { useState, useTransition } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -22,17 +23,21 @@ export default function PricingCard({
   course,
   isEnrolled,
   isInCart,
+  isInWishlist,
 }: {
   course: ICourse;
   isEnrolled: boolean;
   isInCart: boolean;
+  isInWishlist: boolean;
 }) {
   const duration = durationFormatterString(course.totalOfHours);
   const [isPending, startTransition] = useTransition();
   const [isAdding, startAdding] = useTransition();
+  const [isTogglingWishlist, startTogglingWishlist] = useTransition();
   // the page it sits on is cached per request, so the button tracks the add
   // itself rather than waiting for the server prop to come back around
   const [inCart, setInCart] = useState(isInCart);
+  const [inWishlist, setInWishlist] = useState(isInWishlist);
   const queryClient = useQueryClient();
 
   const handleEnroll = () => {
@@ -53,6 +58,20 @@ export default function PricingCard({
         toast.success(result.message as string);
         setInCart(true);
         queryClient.invalidateQueries({ queryKey: ["cart"] });
+      } else {
+        toast.error(result.message as string);
+      }
+    });
+  };
+
+  const handleToggleWishlist = () => {
+    startTogglingWishlist(async () => {
+      const result = inWishlist
+        ? await removeFromWishlistAction(course.id)
+        : await addToWishlistAction(course.id);
+      if (result.status === "success") {
+        toast.success(result.message as string);
+        setInWishlist(!inWishlist);
       } else {
         toast.error(result.message as string);
       }
@@ -149,14 +168,22 @@ export default function PricingCard({
           </Button>
         ) : (
           <Button
-            onClick={() => toast("Wishlist is coming soon")}
+            onClick={handleToggleWishlist}
+            disabled={isTogglingWishlist}
             variant="outline"
             className="w-full border-primary text-primary font-bold text-xl py-3 rounded-lg transition-colors bg-transparent cursor-pointer"
             size="lg"
           >
-            {/* ! is Tailwind's important modifier to override ShadCN's defaults */}
-            <Heart size={28} className="mr-2 flex !w-7 !h-7" />
-            <p>Wishlist</p>
+            {isTogglingWishlist ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              // ! is Tailwind's important modifier to override ShadCN's defaults
+              <Heart
+                size={28}
+                className={`mr-2 flex !w-7 !h-7 ${inWishlist ? "fill-primary" : ""}`}
+              />
+            )}
+            <p>{inWishlist ? "Remove from Wishlist" : "Wishlist"}</p>
           </Button>
         )}
       </div>

@@ -36,6 +36,11 @@ export const apiRoutes = {
     addToCart: (id: string) => `${API_BASE_URL}/course/cart/${id}`,
     removeFromCart: (id: string) => `${API_BASE_URL}/course/cart/${id}`,
   },
+  wishlist: {
+    getWishlist: `${API_BASE_URL}/course/wishlist`,
+    addToWishlist: (id: string) => `${API_BASE_URL}/course/wishlist/${id}`,
+    removeFromWishlist: (id: string) => `${API_BASE_URL}/course/wishlist/${id}`,
+  },
   module: {
     createModule: `${API_BASE_URL}/course/newmodule`,
     updateModule: `${API_BASE_URL}/course/updatemodule`,

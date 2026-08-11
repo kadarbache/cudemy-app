@@ -7,12 +7,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { removeFromCartAction } from "@/actions/cart";
+import { addToWishlistAction } from "@/actions/wishlist";
 import { ICartItem } from "@/util/interfaces";
 import { effectivePrice } from "@/util/price";
 
 export function CartRow({ item }: { item: ICartItem }) {
   const { course } = item;
   const [isPending, startTransition] = useTransition();
+  const [isMoving, startMoving] = useTransition();
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -27,6 +29,30 @@ export function CartRow({ item }: { item: ICartItem }) {
         router.refresh();
       } else {
         toast.error(result.message as string);
+      }
+    });
+  };
+
+  const handleMoveToWishlist = () => {
+    startMoving(async () => {
+      const wishlisted = await addToWishlistAction(course.id);
+      // already being on the wishlist is fine, the course still needs to
+      // leave the cart
+      if (
+        wishlisted.status === "error" &&
+        wishlisted.message !== "this course is already in your wishlist"
+      ) {
+        toast.error(wishlisted.message as string);
+        return;
+      }
+
+      const removed = await removeFromCartAction(course.id);
+      if (removed.status === "success") {
+        toast.success("Moved to wishlist");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        router.refresh();
+      } else {
+        toast.error(removed.message as string);
       }
     });
   };
@@ -75,9 +101,11 @@ export function CartRow({ item }: { item: ICartItem }) {
             Remove
           </button>
           <button
-            onClick={() => toast("Wishlist is coming soon")}
-            className="cursor-pointer text-sm text-popover-foreground/40 transition-colors hover:text-popover-foreground/70"
+            onClick={handleMoveToWishlist}
+            disabled={isMoving}
+            className="flex cursor-pointer items-center gap-1 text-sm text-popover-foreground/40 transition-colors hover:text-popover-foreground/70 disabled:opacity-50"
           >
+            {isMoving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             Move to wishlist
           </button>
         </div>

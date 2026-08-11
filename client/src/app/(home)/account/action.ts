@@ -6,7 +6,7 @@ import { getCookies } from "@/lib/helpers";
 import { revalidateTag } from "next/cache";
 import z from "zod";
 import { registerInstrucor } from "../instructor/zodTypes";
-import { InstructorRegistration } from "@/util/interfaces";
+import { IEnrolledCourse, InstructorRegistration } from "@/util/interfaces";
 const validatedUser = z.object({
   name: z.string().min(4).max(15),
   language: z.enum(["English", "Somali"]),
@@ -74,6 +74,24 @@ export const getInstructorProfile =
       return null;
     }
   };
+
+// per user, so never cached and never tagged, same reasoning as the cart
+export const getEnrolledCourses = async (): Promise<
+  IEnrolledCourse[] | null
+> => {
+  try {
+    const response = await fetch(apiRoutes.courses.getEnrolledCourses, {
+      headers: { cookie: await getCookies() },
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    const { data } = await response.json();
+    return data.courses ?? [];
+  } catch (error) {
+    console.error("Get enrolled courses error:", error);
+    return null;
+  }
+};
 
 // the multi select posts the whole option object as json, we only want the values
 function selectedValues(json: FormDataEntryValue | null) {
