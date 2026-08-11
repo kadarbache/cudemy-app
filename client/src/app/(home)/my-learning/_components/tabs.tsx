@@ -10,8 +10,7 @@ export type Tab =
   | "Courses"
   | "Wishlist"
   | "Completed"
-  | "In Progress"
-  | "Archived";
+  | "In Progress";
 
 export default function Tabs({
   tab,
@@ -52,7 +51,6 @@ export default function Tabs({
     "Wishlist",
     "Completed",
     "In Progress",
-    "Archived",
   ];
   const tabs = allTabs.filter((tab) => !hide.includes(tab));
 

@@ -96,6 +96,11 @@ export default async function page({
             </div>
           ))}
         {tab === "Wishlist" && <WishlistTab items={wishlist} />}
+        {(tab === "Completed" || tab === "In Progress") && (
+          <p className="text-center text-muted-foreground mt-10">
+            This functionality is not implemented yet.
+          </p>
+        )}
       </Tabs>
     </div>
   );
