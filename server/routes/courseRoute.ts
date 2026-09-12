@@ -39,6 +39,12 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../controllers/courseController/wishlistController.ts'
+import {
+  getCourseReviews,
+  createReview,
+  updateReview,
+  deleteReview,
+} from '../controllers/courseController/reviewController.ts'
 import upload from '../utils/multer.ts'
 const courseRouter: Router = express.Router()
 
@@ -85,6 +91,15 @@ courseRouter.route('/yourcourse/:courseId').get(session, getYourCourse)
 courseRouter
   .route('/:courseId/enrollment')
   .get(optionalSession, getCourseEnrollment)
+
+// The reviews on a course. Reading is public, writing is one review per
+// enrolled user, so post/patch/delete all act on the caller's own review
+courseRouter
+  .route('/:courseId/reviews')
+  .get(getCourseReviews)
+  .post(session, createReview)
+  .patch(session, updateReview)
+  .delete(session, deleteReview)
 
 // enroll in a course
 courseRouter.route('/enroll/:courseId').post(session, enrollCourse)

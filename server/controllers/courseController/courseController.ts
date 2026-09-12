@@ -4,6 +4,7 @@ import { uploadImage, deleteImage } from '../../utils/cloudinary.ts'
 import prisma from '@/lib/prisma.ts'
 import type { User } from '@/utils/types.ts'
 import { deleteMultipleLectureVideos } from '@/utils/helpers.ts'
+import { courseReviewStats, noReviews } from '@/utils/reviewStats.ts'
 
 declare module 'express' {
   interface Request {
@@ -40,10 +41,16 @@ export async function getAllCourses(
       },
     })
 
+    // the cards show a rating, so the whole page of them is aggregated at once
+    const stats = await courseReviewStats(courses.map((course) => course.id))
+
     return res.status(200).json({
       status: 'success',
       data: {
-        courses,
+        courses: courses.map((course) => ({
+          ...course,
+          ...(stats.get(course.id) ?? noReviews),
+        })),
       },
       message: 'courses fetched successfully',
     })
@@ -240,13 +247,14 @@ export async function getCourse(
     }
 
     // stats shown on the instructor section of the course page
-    const [totalCourses, totalStudents] = await Promise.all([
+    const [totalCourses, totalStudents, reviewStats] = await Promise.all([
       prisma.course.count({
         where: { instructorId: course.instructorId },
       }),
       prisma.enrolledCourse.count({
         where: { course: { is: { instructorId: course.instructorId } } },
       }),
+      courseReviewStats([course.id]),
     ])
 
     let isEnrolled = false
@@ -266,6 +274,7 @@ export async function getCourse(
       message: 'here is your course',
       data: {
         ...course,
+        ...(reviewStats.get(course.id) ?? noReviews),
         isEnrolled,
         instructorStats: { totalCourses, totalStudents },
       },

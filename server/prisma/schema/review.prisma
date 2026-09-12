@@ -1,0 +1,17 @@
+model Review {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  rating Int
+  body   String? @db.String
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // one verdict per person per course, same rule as the cart and the wishlist
+  @@unique([userId, courseId])
+  @@map("reviews")
+}

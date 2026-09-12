@@ -11,6 +11,7 @@ model User {
   enrolledCourses EnrolledCourse[]
   cartItems       CartItem[]
   wishlistItems   WishlistItem[]
+  reviews         Review[]
   lectures        Lecture[]
   courses         Course[]
   sessions        Session[]

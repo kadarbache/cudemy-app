@@ -17,6 +17,7 @@ model Course {
   students     EnrolledCourse[]
   cartItems    CartItem[]
   wishlistItems WishlistItem[]
+  reviews       Review[]
 
   isPublished      Boolean  @default(false)
   numberOfLectures Int      @default(0)
