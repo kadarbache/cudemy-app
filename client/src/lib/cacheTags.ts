@@ -7,6 +7,11 @@ export const cacheTags = {
   coursesList: "courses",
   // one public course payload behind GET /course/:courseId
   course: (courseId: string) => `course:${courseId}`,
+  // the review list behind GET /course/:courseId/reviews. separate from the
+  // course tag because the list is public but changes far more often than the
+  // course itself. writing a review busts this, the course tag (the average
+  // sits in that payload) and the catalogue tag (the cards show it too)
+  courseReviews: (courseId: string) => `course-reviews:${courseId}`,
   // the instructor name, image, bio and stats that sit inside every course
   // payload. a fetch can only be tagged with what is known before the response
   // arrives, and the instructor id only arrives in the body, so this one coarse

@@ -146,9 +146,9 @@ function ResultRow({
         </p>
       </div>
 
-      {course.rating ? (
+      {course.averageRating != null ? (
         <div className="hidden sm:flex items-center gap-0.5 shrink-0">
-          <RenderStars rating={course.rating} />
+          <RenderStars rating={course.averageRating} />
         </div>
       ) : null}
 

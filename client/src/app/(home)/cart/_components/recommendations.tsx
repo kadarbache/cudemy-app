@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ICourse } from "@/util/interfaces";
 import { effectivePrice } from "@/util/price";
 
-// RenderStars draws nothing for an empty star, and no course carries a rating
-// yet, so it would leave a blank gap here. Dimmed stars read as "not rated"
+// RenderStars draws nothing for an empty star, which would leave a blank gap
+// here. Dimmed stars read as "not rated" for a course nobody has reviewed,
 // without inventing a score.
 function Stars({ rating }: { rating: number }) {
   return (
@@ -67,7 +67,7 @@ export function Recommendations({ courses }: { courses: ICourse[] }) {
               <span className="truncate">{course.instructor.name}</span>
             </p>
             <div className="mt-1.5 flex items-center gap-1.5">
-              <Stars rating={course.rating ?? 0} />
+              <Stars rating={course.averageRating ?? 0} />
               <span className="text-xs text-popover-foreground/40">
                 {course.numberOfLectures} lectures
               </span>

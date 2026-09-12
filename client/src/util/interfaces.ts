@@ -72,10 +72,34 @@ export interface ICourse {
   instructor: IInstructor;
   modules?: Module[];
   isEnrolled?: boolean;
-  rating?: number;
+  // derived from the reviews on every read, never stored on the course.
+  // null average means nobody has reviewed it, which is not a rating of zero
+  averageRating?: number | null;
+  reviewCount?: number;
   instructorStats?: IInstructorStats;
   _count?: { students: number };
 }
+
+// the author of a review, the only part of a user a review ever exposes
+export interface IReviewAuthor {
+  id: string;
+  name: string;
+  image: string;
+}
+
+export interface IReview {
+  id: string;
+  rating: number;
+  body: string | null;
+  userId: string;
+  courseId: string;
+  createdAt: string;
+  updatedAt: string;
+  user: IReviewAuthor;
+}
+
+// how many reviews sit on each star, always all five keys
+export type IRatingDistribution = Record<1 | 2 | 3 | 4 | 5, number>;
 
 export interface IEnrolledCourse extends ICourse {
   entrolledAt: string;

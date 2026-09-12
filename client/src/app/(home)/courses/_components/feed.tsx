@@ -6,9 +6,9 @@ import { ICourse } from "@/util/interfaces";
 import { effectivePrice } from "@/util/price";
 
 /*
- The tier and the rating row are stand-ins. Nothing behind them exists yet:
- the Course model has no tier flag, no rating and no review count, and the
- catalogue endpoint returns none of the three. The price below is real.
+ The rating and the review count are real, derived from the course's reviews.
+ A course nobody has reviewed shows neither, rather than a zero that reads as a
+ bad score. The tier badge is still a stand-in: there is no tier flag on Course.
 */
 
 function Card({ courses }: { courses: ICourse[] }) {
@@ -36,25 +36,30 @@ function Card({ courses }: { courses: ICourse[] }) {
           <p className="mt-1 text-sm text-popover-foreground/50">
             {course.instructor.name}
           </p>
-          {/* tier + rating, both placeholders */}
+          {/* placeholder tier, then the real rating when the course has one */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Badge className="bg-[#5624d0] text-white px-2 py-1">
               <ShieldCheck />
               Premium
             </Badge>
-            <Badge
-              variant="outline"
-              className="px-2 py-1 border-popover-foreground/15"
-            >
-              <Star className="fill-amber-400 text-amber-400" />
-              4.6
-            </Badge>
-            <Badge
-              variant="outline"
-              className="px-2 py-1 font-normal border-popover-foreground/15 text-popover-foreground/50"
-            >
-              2,968 ratings
-            </Badge>
+            {course.averageRating != null && (
+              <>
+                <Badge
+                  variant="outline"
+                  className="px-2 py-1 border-popover-foreground/15"
+                >
+                  <Star className="fill-amber-400 text-amber-400" />
+                  {course.averageRating.toFixed(1)}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="px-2 py-1 font-normal border-popover-foreground/15 text-popover-foreground/50"
+                >
+                  {course.reviewCount?.toLocaleString()}{" "}
+                  {course.reviewCount === 1 ? "rating" : "ratings"}
+                </Badge>
+              </>
+            )}
           </div>
           {/* price, pinned to the bottom so it lines up across the row */}
           <p className="mt-auto pt-3 text-lg font-bold text-popover-foreground">
