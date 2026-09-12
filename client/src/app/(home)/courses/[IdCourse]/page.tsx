@@ -5,6 +5,8 @@ import { TabMenu } from "@/components/tab-menu";
 import VideoPlayerComponent from "@/components/vedioPlayer";
 import { getCartAction } from "@/actions/cart";
 import { getWishlistAction } from "@/actions/wishlist";
+import { getCourseReviewsAction } from "@/actions/review";
+import { getUserSession } from "@/actions/authentication";
 import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
 import { Module } from "@/util/interfaces";
 import { notFound } from "next/navigation";
@@ -22,18 +24,27 @@ const Page = async ({
   const { vedio } = await searchParams;
 
   // independent, so don't make one wait on another
-  const [course, isEnrolled, cart, wishlist] = await Promise.all([
-    getPublicCourse(IdCourse),
-    getCourseEnrollment(IdCourse),
-    getCartAction(),
-    getWishlistAction(),
-  ]);
+  const [course, isEnrolled, cart, wishlist, courseReviews, userSession] =
+    await Promise.all([
+      getPublicCourse(IdCourse),
+      getCourseEnrollment(IdCourse),
+      getCartAction(),
+      getWishlistAction(),
+      getCourseReviewsAction(IdCourse),
+      getUserSession(),
+    ]);
 
   if (!course) notFound();
 
   const isInCart = cart?.some((item) => item.courseId === IdCourse) ?? false;
   const isInWishlist =
     wishlist?.some((item) => item.courseId === IdCourse) ?? false;
+
+  // the review list is public and cached, so whose review is whose is settled
+  // here rather than baked into the payload. writing happens in the player, but
+  // an existing review can be edited from this page.
+  const canReview =
+    isEnrolled && userSession?.id !== course.instructor?.id;
 
   // this is hard coded now and every course will have a preview lecture
   const previewLecture = course?.modules?.flatMap((m: Module) => m.lectures); // merge all lectures into one array
@@ -74,7 +85,13 @@ const Page = async ({
               {course?.description}
             </p>
             {/* reviews and course modules */}
-            <TabMenu data={course} />
+            <TabMenu
+              data={course}
+              reviews={courseReviews.reviews}
+              distribution={courseReviews.distribution}
+              currentUserId={userSession?.id ?? null}
+              canReview={canReview}
+            />
             {/* Instructor info */}
             <InstructorProfile
               instructor={course?.instructor}

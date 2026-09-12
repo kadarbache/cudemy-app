@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getCourseEnrollment, getPublicCourse } from "@/lib/courses";
+import { getCourseReviewsAction } from "@/actions/review";
+import { getUserSession } from "@/actions/authentication";
 import MobileNavigation from "@/components/mobileNavigation";
 import { NavigationFixed } from "@/components/navigation";
 import { Lecture, Module } from "@/util/interfaces";
@@ -16,9 +18,11 @@ const Page = async ({
   const { IdCourse } = await params;
   const { lecture } = await searchParams;
 
-  const [course, isEnrolled] = await Promise.all([
+  const [course, isEnrolled, courseReviews, userSession] = await Promise.all([
     getPublicCourse(IdCourse),
     getCourseEnrollment(IdCourse),
+    getCourseReviewsAction(IdCourse),
+    getUserSession(),
   ]);
 
   if (!course) notFound();
@@ -38,12 +42,25 @@ const Page = async ({
     m.lectures.some((l) => l.id === activeLecture?.id),
   );
 
+  // getting this far means enrolled, so the only thing left to rule out is an
+  // instructor reviewing their own course
+  const canReview = userSession?.id !== course.instructor?.id;
+  const existingReview =
+    courseReviews.reviews.find((review) => review.userId === userSession?.id) ??
+    null;
+
   return (
     <div className="min-h-screen">
       <NavigationFixed />
       <MobileNavigation hideFrom="lg" />
       <div className="flex gap-6 max-w-[1400px] mx-auto mt-[var(--margin-section-top)] mb-5 px-5 items-start">
-        <VideoPanel activeModule={activeModule} activeLecture={activeLecture} />
+        <VideoPanel
+          activeModule={activeModule}
+          activeLecture={activeLecture}
+          courseId={IdCourse}
+          existingReview={existingReview}
+          canReview={canReview}
+        />
         <LessonSidebar course={course} activeLectureId={activeLecture?.id} />
       </div>
     </div>

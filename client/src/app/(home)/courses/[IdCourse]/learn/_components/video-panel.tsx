@@ -1,6 +1,7 @@
-import { Download, FileText, Paperclip } from "lucide-react";
+import { Download, FileText, Paperclip, Star } from "lucide-react";
 import VideoPlayerComponent from "@/components/vedioPlayer";
-import { Lecture, Module } from "@/util/interfaces";
+import ReviewForm from "@/app/(home)/courses/_components/review-form";
+import { IReview, Lecture, Module } from "@/util/interfaces";
 
 const resources = [
   { name: "lesson-slides.pdf", size: "2.4 MB" },
@@ -11,9 +12,17 @@ const resources = [
 export default function VideoPanel({
   activeModule,
   activeLecture,
+  courseId,
+  existingReview,
+  canReview,
 }: {
   activeModule: Module | undefined;
   activeLecture: Lecture | undefined;
+  courseId: string;
+  // the viewer's own review, when they have already written one
+  existingReview: IReview | null;
+  // false for the instructor, who cannot review their own course
+  canReview: boolean;
 }) {
   return (
     <div className="flex-1 min-w-0">
@@ -40,6 +49,20 @@ export default function VideoPanel({
           No resources available
         </div>
       </div>
+
+      {/* the review is of the whole course, not this lecture, so the heading
+          has to say so -- every lecture in the player shows this same form */}
+      {canReview && (
+        <div className="mt-7 border-t border-popover-foreground/10 pt-5">
+          <div className="font-bold flex items-center gap-2">
+            <Star className="w-4 h-4" />
+            {existingReview ? "Your review of this course" : "Rate this course"}
+          </div>
+          <div className="mt-4 max-w-2xl">
+            <ReviewForm courseId={courseId} existing={existingReview} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

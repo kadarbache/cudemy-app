@@ -2,9 +2,21 @@
 import React, { useState } from "react";
 import { Reviews } from "@/app/(home)/courses/_components/reviews";
 import CourseCurriculum from "@/app/(home)/courses/_components/modules";
-import { ICourse } from "@/util/interfaces";
+import { IRatingDistribution, ICourse, IReview } from "@/util/interfaces";
 
-export const TabMenu = ({ data }: { data: ICourse }) => {
+export const TabMenu = ({
+  data,
+  reviews,
+  distribution,
+  currentUserId,
+  canReview,
+}: {
+  data: ICourse;
+  reviews: IReview[];
+  distribution: IRatingDistribution;
+  currentUserId: string | null;
+  canReview: boolean;
+}) => {
   const [tabMenu, setTabMenu] = useState("course");
 
   const HandleTabMenus = (tab: string) => {
@@ -33,7 +45,17 @@ export const TabMenu = ({ data }: { data: ICourse }) => {
           Course
         </button>
       </div>
-      {tabMenu === "reviews" && <Reviews />}
+      {tabMenu === "reviews" && (
+        <Reviews
+          courseId={data.id}
+          reviews={reviews}
+          distribution={distribution}
+          averageRating={data.averageRating ?? null}
+          reviewCount={data.reviewCount ?? 0}
+          currentUserId={currentUserId}
+          canReview={canReview}
+        />
+      )}
       {tabMenu === "course" && <CourseCurriculum course={data} />}
     </>
   );
