@@ -23,8 +23,16 @@ export async function getWishlist(
     }
 
     //2 get the wishlist items with the course they point at
-    const items = await prisma.wishlistItem.findMany({
+    // same as the cart: enrolling deletes these rows, and this keeps one that
+    // outlived a failed delete from showing a course the user already owns
+    const enrolled = await prisma.enrolledCourse.findMany({
       where: { userId: user.id },
+      select: { courseId: true },
+    })
+    const enrolledIds = enrolled.map((row) => row.courseId)
+
+    const items = await prisma.wishlistItem.findMany({
+      where: { userId: user.id, courseId: { notIn: enrolledIds } },
       orderBy: { addedAt: 'desc' },
       include: {
         course: {

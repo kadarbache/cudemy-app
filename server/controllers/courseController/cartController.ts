@@ -22,9 +22,18 @@ export async function getCart(
       return next(new AppError('user not found', 404))
     }
 
-    //2 get the cart items with the course they point at
-    const items = await prisma.cartItem.findMany({
+    //2 a course the user has since enrolled in is no longer theirs to buy.
+    //  enrolling deletes these rows, this is the backstop for one that outlived
+    //  a failed delete, and for rows written before that existed
+    const enrolled = await prisma.enrolledCourse.findMany({
       where: { userId: user.id },
+      select: { courseId: true },
+    })
+    const enrolledIds = enrolled.map((row) => row.courseId)
+
+    //3 get the cart items with the course they point at
+    const items = await prisma.cartItem.findMany({
+      where: { userId: user.id, courseId: { notIn: enrolledIds } },
       orderBy: { addedAt: 'desc' },
       include: {
         course: {

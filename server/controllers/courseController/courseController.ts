@@ -642,6 +642,19 @@ export async function enrollCourse(
       },
     })
 
+    // 6 a course you now own belongs in neither list, so enrolling takes it out
+    //   of both. these cannot run in the same transaction as the create (mongo
+    //   here is not a replica set), so the reads filter enrolled courses out as
+    //   well and a row left behind by a failure here is hidden rather than shown
+    await Promise.all([
+      prisma.cartItem.deleteMany({
+        where: { userId: user.id, courseId: course.id },
+      }),
+      prisma.wishlistItem.deleteMany({
+        where: { userId: user.id, courseId: course.id },
+      }),
+    ])
+
     return res.status(200).json({
       status: 'success',
       data: { course: enrolledCourse },
