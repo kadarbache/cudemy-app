@@ -57,6 +57,7 @@ export const Reviews = ({
   reviewCount,
   currentUserId,
   canReview,
+  instructor,
 }: {
   courseId: string;
   reviews: IReview[];
@@ -67,6 +68,8 @@ export const Reviews = ({
   currentUserId: string | null;
   // enrolled and not the instructor, so an existing review can be edited here
   canReview: boolean;
+  // who any reply on this course is from, there is only ever one such person
+  instructor?: { name: string; image: string } | null;
 }) => {
   const [showMore, setShowMore] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -116,6 +119,7 @@ export const Reviews = ({
           <Review
             review={mine}
             isMine
+            instructor={instructor}
             action={
               canReview ? (
                 <Button
@@ -133,7 +137,7 @@ export const Reviews = ({
 
       <div className="flex flex-col gap-4">
         {visible.map((review) => (
-          <Review key={review.id} review={review} />
+          <Review key={review.id} review={review} instructor={instructor} />
         ))}
       </div>
 

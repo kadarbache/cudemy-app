@@ -54,6 +54,7 @@ export const TabMenu = ({
           reviewCount={data.reviewCount ?? 0}
           currentUserId={currentUserId}
           canReview={canReview}
+          instructor={data.instructor}
         />
       )}
       {tabMenu === "course" && <CourseCurriculum course={data} />}
