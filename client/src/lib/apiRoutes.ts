@@ -40,6 +40,11 @@ export const apiRoutes = {
     // one path, four verbs: read the course's reviews, write/change/remove your own
     forCourse: (courseId: string) =>
       `${API_BASE_URL}/course/${courseId}/reviews`,
+    // every review across the courses you teach, for the dashboard queue
+    received: `${API_BASE_URL}/course/reviews/received`,
+    // your answer to one of them: put to write or change it, delete to take it back
+    reply: (courseId: string, reviewId: string) =>
+      `${API_BASE_URL}/course/${courseId}/reviews/${reviewId}/reply`,
   },
   wishlist: {
     getWishlist: `${API_BASE_URL}/course/wishlist`,

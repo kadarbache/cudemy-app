@@ -6,6 +6,7 @@ import {
   ChevronUp,
   FileText,
   Home,
+  MessageSquare,
   Settings,
   TrendingUp,
   Users,
@@ -58,6 +59,16 @@ export default function Navigation() {
             >
               <FileText className="h-5 w-5" />
               <span className="text-sm font-medium">Courses</span>
+            </Button>
+          </Link>
+
+          <Link href="/manage-courses/reviews">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 text-foreground hover:bg-accent cursor-pointer"
+            >
+              <MessageSquare className="h-5 w-5" />
+              <span className="text-sm font-medium">Reviews</span>
             </Button>
           </Link>
 

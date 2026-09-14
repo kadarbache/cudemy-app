@@ -96,6 +96,15 @@ export interface IReview {
   createdAt: string;
   updatedAt: string;
   user: IReviewAuthor;
+  // the instructor's answer, null until they write one
+  reply: string | null;
+  repliedAt: string | null;
+}
+
+// a review as the instructor meets it in the dashboard, where the list spans
+// every course they teach and so has to say which one this landed on
+export interface IReceivedReview extends IReview {
+  course: { id: string; title: string; secureUrl: string };
 }
 
 // how many reviews sit on each star, always all five keys

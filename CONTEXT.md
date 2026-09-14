@@ -36,6 +36,20 @@ User submits their instructor application and it is looked over. That older sens
 survives in the `/instructor/review` route and the `guidelinesReviewed` field.
 When this codebase says `Review` unqualified, it means the verdict on a Course.
 
+## Response
+
+The instructor's answer to one Review, written from the dashboard and shown
+publicly underneath the Review it answers. A Review holds at most one, only the
+instructor of that Course may write it, and writing a second one replaces the
+first — which is why the endpoint is a `PUT`.
+
+A Response carries no Rating and is never a Review in its own right. It cannot
+be: the instructor is barred from reviewing their own Course, and any extra
+Review row would land in the average (see
+[ADR 0001](docs/adr/0001-compute-review-aggregates-on-read.md)). It lives as two
+fields on the Review, `reply` and `repliedAt`, so removing the Review removes
+the answer with it.
+
 ## Rating
 
 The star component of a Review, 1 to 5, always a whole number — a person picks

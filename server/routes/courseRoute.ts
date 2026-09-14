@@ -44,6 +44,9 @@ import {
   createReview,
   updateReview,
   deleteReview,
+  getInstructorReviews,
+  replyToReview,
+  deleteReply,
 } from '../controllers/courseController/reviewController.ts'
 import upload from '../utils/multer.ts'
 const courseRouter: Router = express.Router()
@@ -81,6 +84,11 @@ courseRouter
   .post(session, addToWishlist)
   .delete(session, removeFromWishlist)
 
+// Every review across the courses the current user teaches, the queue behind
+// the dashboard. this sits above /:courseId on purpose, same as cart and
+// wishlist, so 'reviews' is never read as a course id
+courseRouter.route('/reviews/received').get(session, getInstructorReviews)
+
 // Get a specific course by its ID
 courseRouter.route('/:courseId').get(optionalSession, getCourse)
 
@@ -100,6 +108,13 @@ courseRouter
   .post(session, createReview)
   .patch(session, updateReview)
   .delete(session, deleteReview)
+
+// The instructor's answer to one review. put, not post: a review holds at most
+// one reply, so answering twice is an edit
+courseRouter
+  .route('/:courseId/reviews/:reviewId/reply')
+  .put(session, replyToReview)
+  .delete(session, deleteReply)
 
 // enroll in a course
 courseRouter.route('/enroll/:courseId').post(session, enrollCourse)

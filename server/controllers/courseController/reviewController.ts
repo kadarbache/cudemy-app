@@ -10,6 +10,7 @@ declare module 'express' {
 }
 
 const MAX_BODY_LENGTH = 1000
+const MAX_REPLY_LENGTH = 1000
 
 // the reviewer's public identity, the only part of a User a review ever exposes
 const reviewAuthor = {
@@ -32,6 +33,32 @@ function parseBody(value: unknown): string | null | undefined {
   if (body.length === 0) return null
   if (body.length > MAX_BODY_LENGTH) return undefined
   return body
+}
+
+// a reply is text or it is not a reply at all: an empty one means the instructor
+// wants it gone, which is what DELETE is for
+function parseReply(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const reply = value.trim()
+  if (reply.length === 0 || reply.length > MAX_REPLY_LENGTH) return null
+  return reply
+}
+
+// the course the review sits on, and whether this user is the one who teaches
+// it. ownership lives on the Course and does not change under us, so reading it
+// before the write is safe in a way that reading a review's owner would not be
+async function checkOwnership(user: User, courseId: string) {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { id: true, instructorId: true },
+  })
+  if (!course) return new AppError('course not found', 404)
+
+  if (course.instructorId !== user.id) {
+    return new AppError('only the instructor of this course can reply', 403)
+  }
+
+  return null
 }
 
 // everything that has to be true before a review can exist: a real course the
@@ -270,6 +297,158 @@ export async function deleteReview(
     return next(
       new AppError(
         `internal server error while removing the review ${error instanceof Error ? error.message : 'unknown error'}`,
+        500,
+      ),
+    )
+  }
+}
+
+// every review sitting on a course the current user teaches, newest first.
+// this is the queue behind the dashboard, so it carries the course each review
+// landed on. private, unlike getCourseReviews
+export async function getInstructorReviews(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    //1 check if the user exist
+    const user = req.user
+    if (!user) {
+      return next(new AppError('user not found', 404))
+    }
+
+    //2 one query over every course they teach, not one query per course
+    const reviews = await prisma.review.findMany({
+      where: { course: { instructorId: user.id } },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: reviewAuthor,
+        course: { select: { id: true, title: true, secureUrl: true } },
+      },
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: { reviews },
+      message: 'reviews fetched successfully',
+    })
+  } catch (error) {
+    return next(
+      new AppError(
+        `internal server error while fetching your reviews ${error instanceof Error ? error.message : 'unknown error'}`,
+        500,
+      ),
+    )
+  }
+}
+
+// answer one review. a review holds at most one reply, so writing twice is an
+// edit, which is why this is a PUT and takes no separate create path
+export async function replyToReview(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  //1 getting the params
+  const { courseId, reviewId } = req.params
+  if (!courseId || !reviewId) {
+    return next(new AppError('course id and review id are required', 400))
+  }
+
+  //2 validating what was sent
+  const reply = parseReply(req.body?.reply)
+  if (reply === null) {
+    return next(
+      new AppError(
+        `a reply must be text of at most ${MAX_REPLY_LENGTH} characters`,
+        400,
+      ),
+    )
+  }
+
+  try {
+    //3 check if the user exist
+    const user = req.user
+    if (!user) {
+      return next(new AppError('user not found', 404))
+    }
+
+    //4 only the instructor of the course answers the reviews on it
+    const notTheirs = await checkOwnership(user, courseId)
+    if (notTheirs) return next(notTheirs)
+
+    //5 scope the write by the pair, so a review id from another course can
+    //  never be reached through this one
+    const { count } = await prisma.review.updateMany({
+      where: { id: reviewId, courseId },
+      data: { reply, repliedAt: new Date() },
+    })
+    if (count === 0) {
+      return next(new AppError('review not found', 404))
+    }
+
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      include: { user: reviewAuthor },
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: { review },
+      message: 'reply posted successfully',
+    })
+  } catch (error) {
+    return next(
+      new AppError(
+        `internal server error while posting the reply ${error instanceof Error ? error.message : 'unknown error'}`,
+        500,
+      ),
+    )
+  }
+}
+
+// take back the reply, leaving the review itself untouched
+export async function deleteReply(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  //1 getting the params
+  const { courseId, reviewId } = req.params
+  if (!courseId || !reviewId) {
+    return next(new AppError('course id and review id are required', 400))
+  }
+
+  try {
+    //2 check if the user exist
+    const user = req.user
+    if (!user) {
+      return next(new AppError('user not found', 404))
+    }
+
+    //3 only the instructor of the course answers the reviews on it
+    const notTheirs = await checkOwnership(user, courseId)
+    if (notTheirs) return next(notTheirs)
+
+    //4 clearing both halves together, a reply time with no reply is nonsense
+    const { count } = await prisma.review.updateMany({
+      where: { id: reviewId, courseId },
+      data: { reply: null, repliedAt: null },
+    })
+    if (count === 0) {
+      return next(new AppError('review not found', 404))
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: { reviewId },
+      message: 'reply removed successfully',
+    })
+  } catch (error) {
+    return next(
+      new AppError(
+        `internal server error while removing the reply ${error instanceof Error ? error.message : 'unknown error'}`,
         500,
       ),
     )
