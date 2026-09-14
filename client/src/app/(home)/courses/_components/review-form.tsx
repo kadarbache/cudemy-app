@@ -17,6 +17,16 @@ import { IReview } from "@/util/interfaces";
 // round trip
 const MAX_BODY_LENGTH = 1000;
 
+// what each score reads as, so the stars are not the only thing telling a
+// person what they just picked
+const RATING_LABELS: Record<number, string> = {
+  1: "Poor",
+  2: "Fair",
+  3: "Good",
+  4: "Very good",
+  5: "Excellent",
+};
+
 const reviewSchema = z.object({
   rating: z
     .number()
@@ -89,40 +99,76 @@ export default function ReviewForm({
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <StarRatingInput
-        value={rating}
-        onChange={setRating}
-        disabled={isPending}
-      />
+    <div className="flex flex-col gap-6 rounded-xl border border-popover-foreground/10 bg-popover/40 p-5">
+      {/* the rating, which is the only required part */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-semibold text-popover-foreground">
+          How would you rate this course?
+        </label>
+        <div className="flex items-center gap-3">
+          <StarRatingInput
+            value={rating}
+            onChange={setRating}
+            disabled={isPending}
+          />
+          <span
+            className={
+              rating
+                ? "text-sm font-medium text-popover-foreground"
+                : "text-sm text-popover-foreground/40"
+            }
+          >
+            {RATING_LABELS[rating] ?? "Tap a star"}
+          </span>
+        </div>
+      </div>
 
-      <Textarea
-        value={body}
-        onChange={(event) => setBody(event.target.value)}
-        disabled={isPending}
-        rows={4}
-        maxLength={MAX_BODY_LENGTH}
-        placeholder="What did you make of this course? (optional)"
-        className="resize-none"
-      />
+      {/* and the part that is not */}
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="review-body"
+          className="text-sm font-semibold text-popover-foreground"
+        >
+          Tell other students what you think{" "}
+          <span className="font-normal text-popover-foreground/40">
+            (optional)
+          </span>
+        </label>
+        <Textarea
+          id="review-body"
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          disabled={isPending}
+          rows={5}
+          maxLength={MAX_BODY_LENGTH}
+          placeholder="What stood out? What would you tell someone thinking about taking it?"
+          className="max-w-none resize-none rounded-lg bg-background"
+        />
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs text-destructive">{error}</span>
+          <span className="text-xs text-popover-foreground/40">
+            {body.length}/{MAX_BODY_LENGTH}
+          </span>
+        </div>
+      </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs text-popover-foreground/40">
-          {body.length}/{MAX_BODY_LENGTH}
-        </span>
+      {/* delete sits away from the confirming action on purpose */}
+      <div className="flex items-center justify-between gap-3 border-t border-popover-foreground/10 pt-4">
+        {existing ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isPending}
+            className="cursor-pointer text-destructive hover:text-destructive"
+          >
+            Delete review
+          </Button>
+        ) : (
+          <span />
+        )}
 
         <div className="flex items-center gap-2">
-          {existing && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDelete}
-              disabled={isPending}
-              className="cursor-pointer text-destructive hover:text-destructive"
-            >
-              Delete
-            </Button>
-          )}
           {onDone && (
             <Button
               variant="outline"
@@ -135,18 +181,19 @@ export default function ReviewForm({
             </Button>
           )}
           <Button
-            variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isPending}
-            className="cursor-pointer"
+            disabled={isPending || rating === 0}
+            className="cursor-pointer bg-[var(--primary-color)] px-5 font-semibold text-white hover:bg-[var(--primary-color)]/90"
           >
-            {isPending ? "Saving..." : existing ? "Update review" : "Post review"}
+            {isPending
+              ? "Saving..."
+              : existing
+                ? "Update review"
+                : "Submit review"}
           </Button>
         </div>
       </div>
-
-      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
