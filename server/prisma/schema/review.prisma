@@ -3,6 +3,11 @@ model Review {
   rating Int
   body   String? @db.String
 
+  // the instructor's answer to this review. it carries no rating of its own, so
+  // it never reaches the groupBy behind the course average (see ADR 0001)
+  reply     String?   @db.String
+  repliedAt DateTime?
+
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String @db.ObjectId
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
