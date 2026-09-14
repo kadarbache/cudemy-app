@@ -12,6 +12,13 @@ export function useAuthDialog(dialog: AuthDialog) {
 
   const open = searchParams.get("auth") === dialog;
 
+  // the page to come back to once a submit goes through, with ?auth= dropped.
+  // the server cannot work this out on its own, so the form carries it
+  const params = new URLSearchParams(searchParams);
+  params.delete("auth");
+  const cleanQuery = params.toString();
+  const returnTo = cleanQuery ? `${pathname}?${cleanQuery}` : pathname;
+
   function onOpenChange(next: boolean) {
     const params = new URLSearchParams(searchParams);
     if (next) params.set("auth", dialog);
@@ -23,5 +30,5 @@ export function useAuthDialog(dialog: AuthDialog) {
     window.history.pushState(null, "", query ? `${pathname}?${query}` : pathname);
   }
 
-  return { open, onOpenChange };
+  return { open, onOpenChange, returnTo };
 }

@@ -19,7 +19,7 @@ import { useAuthDialog } from "@/util/useAuthDialog";
 import toast from "react-hot-toast";
 export const SigninButton = () => {
   const [state, formAction, pending] = useActionState(signinAction, null);
-  const { open, onOpenChange } = useAuthDialog("login");
+  const { open, onOpenChange, returnTo } = useAuthDialog("login");
 
   useEffect(() => {
     if (state?.status === "success") {
@@ -69,6 +69,9 @@ export const SigninButton = () => {
             </DialogDescription>
           </DialogHeader>
           <form action={formAction}>
+            {/* the action redirects here afterwards, which is what closes this
+                dialog and takes ?auth= off the url */}
+            <input type="hidden" name="returnTo" value={returnTo} />
             <div className="grid gap-4 mt-3">
               <div className="grid gap-3">
                 <Input

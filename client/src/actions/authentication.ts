@@ -3,6 +3,7 @@ import { apiRoutes } from "@/lib/apiRoutes";
 import { cacheTags } from "@/lib/cacheTags";
 import { getCookies } from "@/lib/helpers";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { revalidateTag } from "next/cache";
 import { parseSetCookie } from "../util/parseSetCookie";
 import { signinSchema, signupSchema } from "./zod";
@@ -34,6 +35,15 @@ export async function getUserSession() {
   }
 
   return userSession;
+}
+
+// where to send the browser once the form has gone through. the dialog puts the
+// page it was opened from in a hidden field, so a sign in on /courses lands back
+// on /courses with no ?auth= left on it
+function returnTo(formData: FormData): string {
+  const value = formData.get("returnTo");
+  // only ever a path on this site, never something a form could point elsewhere
+  return typeof value === "string" && value.startsWith("/") ? value : "/";
 }
 
 export async function signupAction(
@@ -93,7 +103,6 @@ export async function signupAction(
           secure: true,
         });
       }
-      return { status: "success", message: "Signup successful" };
     } else {
       console.error("Signup failed:", data);
       return {
@@ -108,6 +117,10 @@ export async function signupAction(
       message: "Something went wrong. Please try again.",
     };
   }
+
+  // same as signin: the button that owns this dialog unmounts the moment the
+  // session lands, so the url has to be cleaned from here
+  redirect(returnTo(formData));
 }
 
 export async function signinAction(
@@ -162,9 +175,7 @@ export async function signinAction(
         secure: process.env.NODE_ENV === "production",
       });
     }
-    if (response.ok) {
-      return { status: "success", message: "Signin successful" };
-    } else {
+    if (!response.ok) {
       console.error("Signin failed:", data);
       return {
         status: "error",
@@ -175,6 +186,12 @@ export async function signinAction(
     console.error("Signin error:", error);
     return { status: "error", message: "something went wrong" };
   }
+
+  // the nav renders SigninButton only while there is no session, so the moment
+  // this cookie lands the button and its dialog unmount. nothing client side is
+  // left to close the dialog or take ?auth= off the url, which is why this has
+  // to happen here. redirect throws, so it sits outside the try above
+  redirect(returnTo(formData));
 }
 
 export async function signOutAction(): Promise<{
